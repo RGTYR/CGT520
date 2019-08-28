@@ -52,7 +52,7 @@ void keyboard(unsigned char key, int x, int y)
 			break;
 	}
 
-	if(glutGetModifiers() == GLUT_ACTIVE_SHIFT)
+	if (glutGetModifiers() == GLUT_ACTIVE_SHIFT)
 	{
 		std::cout << "Shift active" << std::endl;
 	}
@@ -60,6 +60,13 @@ void keyboard(unsigned char key, int x, int y)
 	{
 		std::cout << "Shift inactive" << std::endl;
 	}
+}
+
+// glut keyboard callback function.
+// This function gets called when an ASCII key is released
+void keyboardUp(unsigned char key, int x, int y)
+{
+	std::cout << "RELEASED" << std::endl;
 }
 
 // glut special keyboard call back function
@@ -71,6 +78,8 @@ void specialKeyboard(int key, int x, int y)
 	int border_y = glutGet(GLUT_WINDOW_BORDER_HEIGHT);
 	int position_x = glutGet(GLUT_WINDOW_X) - border_x;
 	int position_y = glutGet(GLUT_WINDOW_Y) - border_y;
+
+	std::cout << "PRESSED" << std::endl;
 
 	switch (key)
 	{
@@ -120,11 +129,37 @@ void specialKeyboard(int key, int x, int y)
 	}
 }
 
-// glut keyboard callback function.
+// glut special keyboard call back function
+// This function gets called when a special button "F1, F2..." is released
+// The list of special buttons: https://www.opengl.org/resources/libraries/glut/spec3/node54.html#SECTION00089000000000000000
+void specialKeyboardUp(int key, int x, int y)
+{
+	std::cout << "RELEASED" << std::endl;
+}
+
+// glut mouse callback function.
 // This function gets called when a mouse button is pressed
 void mouse(int button, int state, int x, int y)
 {
-   std::cout << "button : "<< button << ", state: " << state << ", x: " << x << ", y: " << y << std::endl;
+	std::cout << "button : "<< button << ", state: " << state << ", x: " << x << ", y: " << y << std::endl;
+}
+
+// glut mouse wheel callback function.
+// This function gets called when a mouse wheel is scrolled
+void mouseWheel(int wheel, int dir, int x, int y)
+{
+	if(dir > 0)
+	{
+		glutReshapeWindow(glutGet(GLUT_WINDOW_WIDTH) + 10, glutGet(GLUT_WINDOW_HEIGHT) + 10);
+		std::cout << "Windows Width: " << glutGet(GLUT_WINDOW_WIDTH) + 10 << std::endl;
+		std::cout << "Windows Height: " << glutGet(GLUT_WINDOW_HEIGHT) + 10 << std::endl;
+	}
+	else if (dir < 0)
+	{
+		glutReshapeWindow(glutGet(GLUT_WINDOW_WIDTH) - 10, glutGet(GLUT_WINDOW_HEIGHT) - 10);
+		std::cout << "Windows Width: " << glutGet(GLUT_WINDOW_WIDTH) - 10 << std::endl;
+		std::cout << "Windows Height: " << glutGet(GLUT_WINDOW_HEIGHT) - 10 << std::endl;
+	}
 }
 
 void changeBackground(int value)
@@ -134,6 +169,12 @@ void changeBackground(int value)
 	glClear(GL_COLOR_BUFFER_BIT);
 	glFinish();
 	glutTimerFunc(5 * 1000, changeBackground, 0);
+}
+
+void reshape(int width, int height)
+{
+	std::cout << "Windows Width: "	<< width	<< std::endl;
+	std::cout << "Windows Height: " << height	<< std::endl;
 }
 
 //Print out information about the OpenGL version supported by the graphics driver.	
@@ -156,28 +197,31 @@ void printGlInfo()
 //C++ programs start executing in the main() function.
 int main (int argc, char **argv)
 {
-   //Configure initial window state
-   glutInit(&argc, argv); // can pass command line args to glut
-   glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
-   glutInitWindowPosition (5, 5);
-   glutInitWindowSize (512, 512);
-   int win = glutCreateWindow ("CGT 520 System Info (Junjie Luo)");
+	//Configure initial window state
+	glutInit(&argc, argv); // can pass command line args to glut
+	glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
+	glutInitWindowPosition (5, 5);
+	glutInitWindowSize (512, 512);
+	int win = glutCreateWindow ("CGT 520 System Info (Junjie Luo)");
 
-   printGlInfo();
+	printGlInfo();
 
-   //Register callback functions with glut. 
-   glutDisplayFunc(display); 
-   glutMouseFunc(mouse);
-   glutKeyboardFunc(keyboard);
-   glutSpecialFunc(specialKeyboard);
-   glutTimerFunc(5 * 1000, changeBackground, 0);
+	//Register callback functions with glut. 
+	glutDisplayFunc(display); 
+	glutMouseFunc(mouse);
+	glutMouseWheelFunc(mouseWheel);
+	glutKeyboardFunc(keyboard);
+	glutKeyboardUpFunc(keyboardUp);
+	glutSpecialFunc(specialKeyboard);
+	glutSpecialUpFunc(specialKeyboardUp);
+	glutTimerFunc(5 * 1000, changeBackground, 0);
+	glutReshapeFunc(reshape);
 
-   //Set the color the screen gets cleared to.
-   glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+	//Set the color the screen gets cleared to.
+	glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 
-   //Enter the glut event loop.
-   glutMainLoop();
-   glutDestroyWindow(win);
-   return 0;		
+	//Enter the glut event loop.
+	glutMainLoop();
+	glutDestroyWindow(win);
+	return 0;		
 }
-
