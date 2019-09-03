@@ -129,7 +129,7 @@ void initOpenGl()
 	// only show the vertex
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
 	// only show the line
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	reload_shader();
 	mesh_data = LoadMesh(mesh_name);
