@@ -21,7 +21,7 @@ static const std::string vertex_shader("lab1_vs.glsl");
 static const std::string fragment_shader("lab1_fs.glsl");
 GLuint shader_program = -1;
 
-static const std::string mesh_name = "junjie.obj";
+static const std::string mesh_name = "junjie.ply";
 MeshData mesh_data;
 
 glm::vec3 pos(0.0f, 0.0f, 0.0f);
