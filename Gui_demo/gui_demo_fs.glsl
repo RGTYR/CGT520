@@ -2,6 +2,9 @@
 
 uniform sampler2D diffuse_tex;
 
+uniform float time;
+uniform float animate;
+
 out vec4 fragcolor;           
 in vec2 tex_coord;
      
