@@ -31,13 +31,19 @@ MeshData mesh_data;
 
 float angle = 0.0f;
 float scale = 1.0f;
+
+bool canClear = true;
+bool deep_testing = true;
+float bg_colour[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+float fragment_color = 1.0f;
 float animate = 0.0f;
 float nu_scale[3] = { 1.0f, 1.0f, 1.0f };
 float pos[3] = { 0.0f, 0.0f, 0.0f };
 float camera_pos[3] = { 0.0f, 1.0f, 2.0f };
-bool canClear = true;
-bool deep_testing = true;
-float bg_colour[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+float fovy = 40.0f;
+float zNear = 1.0f;
+float zFar = 100.0f;
+bool mOrder = true;
 
 //Draw the ImGui user interface
 void draw_gui()
@@ -58,10 +64,15 @@ void draw_gui()
 	{
 		angle = 0.0f;
 	}
+	ImGui::SliderFloat("fragment_color", &fragment_color, 0.0f, +2.0f);
 	ImGui::SliderFloat("Animate", &animate, 0.0f, +10.0f);
 	ImGui::SliderFloat3("Mesh scaling", nu_scale, -2.0f, +2.0f);
 	ImGui::SliderFloat3("Mesh tanslation", pos, -1.0f, +1.0f);
 	ImGui::SliderFloat3("Camera translation", camera_pos, -10.0f, +10.0f);
+	ImGui::SliderFloat("Camera field-of-view angle", &fovy, 0.0f, +100.0f);
+	ImGui::SliderFloat("Camera near clip distance", &zNear, 0.0f, +100.0f);
+	ImGui::SliderFloat("Camera far clip distance", &zFar, 0.0f, +1000.0f);
+	ImGui::Checkbox("M multiplication order", &mOrder);
 	ImGui::End();
 
 	static bool show_test = false;
@@ -80,25 +91,35 @@ void display()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear the back buffer
 	}
 
+	if (deep_testing)
+	{
+		glEnable(GL_DEPTH_TEST);
+	}
+	else
+	{
+		glDisable(GL_DEPTH_TEST);
+	}
+
 	// T controls the position of the mesh
 	// change the position of the mesh
 	glm::mat4 T = glm::translate(glm::vec3(pos[0], pos[1], pos[2]));
-	// M controls the transformation of the mesh
 	// rotate the mesh "angle" degree by the axis of (0.0, 1.0, 0.0)
+	glm::mat4 R = glm::rotate(angle, glm::vec3(0.0f, 1.0f, 0.0f));
 	// scale the mesh by "scale" times
-	// rotate the mesh 180 degree by the axis of (0.0, 0.0, 1.0) when "canClear" is false
-	// rotate the mesh 180 degree by the axis of (1.0, 0.0, 0.0) when "deep_testing" is false
 	// nonuniform scale the mesh by "nu_scale" 
-	glm::mat4 M = T * glm::rotate(angle, glm::vec3(0.0f, 1.0f, 0.0f)) 
-		* glm::scale(glm::vec3(scale*mesh_data.mScaleFactor)) 
-		* glm::rotate(!canClear * 180.0f, glm::vec3(0.0f, 0.0f, 1.0f))
-		* glm::rotate(!deep_testing * 180.0f, glm::vec3(1.0f, 0.0f, 0.0f))
+	glm::mat4 S = glm::scale(glm::vec3(scale*mesh_data.mScaleFactor))
 		* glm::scale(glm::vec3(nu_scale[0], nu_scale[1], nu_scale[2]));
+	// M controls the transformation of the mesh
+	glm::mat4 M = T * R * S;
+	if (!mOrder)
+	{
+		M = R * T * S;
+	}
 	// V controls the attribute of camera
 	glm::mat4 V = glm::lookAt(glm::vec3(camera_pos[0], camera_pos[1], camera_pos[2]), 
 		glm::vec3(0.0f, 0.0f, 0.0f), 
 		glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 P = glm::perspective(40.0f, 1.0f, 0.1f, 100.0f);
+	glm::mat4 P = glm::perspective(fovy, 1.0f, zNear, zFar);
 
 	glUseProgram(shader_program);
 	glActiveTexture(GL_TEXTURE0);
@@ -127,6 +148,12 @@ void display()
 	if (tex_loc != -1)
 	{
 		glUniform1i(tex_loc, 0); // we bound our texture to texture unit 0
+	}
+
+	int fragment_color_loc = glGetUniformLocation(shader_program, "fragment_color");
+	if (fragment_color_loc != -1)
+	{
+		glUniform1f(fragment_color_loc, fragment_color);
 	}
 
 	int animate_loc = glGetUniformLocation(shader_program, "animate");
@@ -193,10 +220,7 @@ void initOpenGl()
 {
 	glewInit();
 
-	if (deep_testing)
-	{
-		glEnable(GL_DEPTH_TEST);
-	}
+	glEnable(GL_DEPTH_TEST);
 
 	reload_shader();
 

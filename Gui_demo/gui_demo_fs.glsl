@@ -3,6 +3,7 @@
 uniform sampler2D diffuse_tex;
 
 uniform float time;
+uniform float fragment_color;
 uniform float animate;
 
 out vec4 fragcolor;           
@@ -11,7 +12,7 @@ in vec2 tex_coord;
 void main(void)
 {   
    vec4 tex_color = texture(diffuse_tex, tex_coord);
-   fragcolor = tex_color;
+   fragcolor = tex_color * fragment_color;
 }
 
 
