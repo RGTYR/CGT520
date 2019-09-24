@@ -103,8 +103,10 @@ void display()
 	// T controls the position of the mesh
 	// change the position of the mesh
 	glm::mat4 T = glm::translate(glm::vec3(pos[0], pos[1], pos[2]));
+	// R controls the rotation
 	// rotate the mesh "angle" degree by the axis of (0.0, 1.0, 0.0)
 	glm::mat4 R = glm::rotate(angle, glm::vec3(0.0f, 1.0f, 0.0f));
+	// S controls the scaling
 	// scale the mesh by "scale" times
 	// nonuniform scale the mesh by "nu_scale" 
 	glm::mat4 S = glm::scale(glm::vec3(scale*mesh_data.mScaleFactor))
