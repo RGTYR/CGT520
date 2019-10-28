@@ -204,6 +204,24 @@ void display()
 		glUniform1f(La_intensity_loc, La_intensity);
 	}
 
+	int Ld_intensity_loc = glGetUniformLocation(shader_program, "Ld_intensity");
+	if (Ld_intensity_loc != -1)
+	{
+		glUniform1f(Ld_intensity_loc, Ld_intensity);
+	}
+
+	int Ls_intensity_loc = glGetUniformLocation(shader_program, "Ls_intensity");
+	if (Ls_intensity_loc != -1)
+	{
+		glUniform1f(Ls_intensity_loc, Ls_intensity);
+	}
+
+	int camera_pos_loc = glGetUniformLocation(shader_program, "camera_pos");
+	if (camera_pos_loc != -1)
+	{
+		glUniform3fv(camera_pos_loc, 1, camera_pos);
+	}
+
 	glBindVertexArray(mesh_data.mVao);
 	glDrawElements(GL_TRIANGLES, mesh_data.mSubmesh[0].mNumIndices, GL_UNSIGNED_INT, 0);
 	//For meshes with multiple submeshes use mesh_data.DrawMesh(); 
@@ -324,7 +342,7 @@ int main (int argc, char **argv)
 	glutInit(&argc, argv); 
 	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowPosition (5, 5);
-	glutInitWindowSize (640, 640);
+	glutInitWindowSize (1080, 1080);
 	int win = glutCreateWindow ("GUI demo");
 
 	printGlInfo();
