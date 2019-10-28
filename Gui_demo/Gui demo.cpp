@@ -34,7 +34,7 @@ float scale = 1.0f;
 
 bool canClear = true;
 bool deep_testing = true;
-float bg_colour[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+float bg_colour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 float fragment_color = 1.0f;
 float animate = 0.0f;
 float nu_scale[3] = { 1.0f, 1.0f, 1.0f };
@@ -44,6 +44,17 @@ float fovy = 40.0f;
 float zNear = 1.0f;
 float zFar = 100.0f;
 bool mOrder = true;
+
+// float pls_position[3] = { 0.0f, 0.0f, 0.0f };
+glm::vec3 pls_position = glm::vec3(0.0f, 0.0f, 0.0f);
+float La_intensity = 0.0;
+float Ld_intensity = 0.0;
+float Ls_intensity = 0.0;
+glm::vec3 ka = glm::vec3(0.0f, 0.0f, 0.0f);
+glm::vec3 kd = glm::vec3(0.0f, 0.0f, 0.0f);
+glm::vec3 ks = glm::vec3(0.0f, 0.0f, 0.0f);
+float shininess = 0.0f;
+bool kCheckbox = true;
 
 //Draw the ImGui user interface
 void draw_gui()
@@ -73,6 +84,18 @@ void draw_gui()
 	ImGui::SliderFloat("Camera near clip distance", &zNear, 0.0f, +100.0f);
 	ImGui::SliderFloat("Camera far clip distance", &zFar, 0.0f, +1000.0f);
 	ImGui::Checkbox("M multiplication order", &mOrder);
+	ImGui::End();
+
+	ImGui::Begin("Junjie_Lighting");
+	ImGui::SliderFloat3("Point Light Source", &pls_position.x, -10.0f, +10.0f);
+	ImGui::SliderFloat("La intensity", &La_intensity, 0.0f, +1.0f);
+	ImGui::SliderFloat("Ld intensity", &Ld_intensity, 0.0f, +1.0f);
+	ImGui::SliderFloat("Ls intensity", &Ls_intensity, 0.0f, +1.0f);
+	ImGui::ColorEdit3("ambient material colour", &ka.x);
+	ImGui::ColorEdit3("diffuse material colour", &kd.x);
+	ImGui::ColorEdit3("specular material colour", &ks.x);
+	ImGui::SliderFloat("Shininess", &shininess, 0.0f, +100.0f);
+	ImGui::Checkbox("Set ka & kb to the Texture colour", &kCheckbox);
 	ImGui::End();
 
 	static bool show_test = false;
@@ -139,11 +162,16 @@ void display()
 		glUniformMatrix4fv(P_loc, 1, false, glm::value_ptr(P));
 	}
 
-	int VM_loc = glGetUniformLocation(shader_program, "VM");
-	if (VM_loc != -1)
+	int V_loc = glGetUniformLocation(shader_program, "V");
+	if (V_loc != -1)
 	{
-		glm::mat4 VM = V*M;
-		glUniformMatrix4fv(VM_loc, 1, false, glm::value_ptr(VM));
+		glUniformMatrix4fv(V_loc, 1, false, glm::value_ptr(V));
+	}
+
+	int M_loc = glGetUniformLocation(shader_program, "M");
+	if (M_loc != -1)
+	{
+		glUniformMatrix4fv(M_loc, 1, false, glm::value_ptr(M));
 	}
 
 	int tex_loc = glGetUniformLocation(shader_program, "diffuse_tex");
@@ -162,6 +190,18 @@ void display()
 	if (animate_loc != -1)
 	{
 		glUniform1f(animate_loc, animate);
+	}
+
+	int pls_position_loc = glGetUniformLocation(shader_program, "pls_position");
+	if (pls_position_loc != -1)
+	{
+		glUniform3fv(pls_position_loc, 1, &pls_position.x);
+	}
+
+	int La_intensity_loc = glGetUniformLocation(shader_program, "La_intensity");
+	if (La_intensity_loc != -1)
+	{
+		glUniform1f(La_intensity_loc, La_intensity);
 	}
 
 	glBindVertexArray(mesh_data.mVao);
@@ -223,6 +263,8 @@ void initOpenGl()
 	glewInit();
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
 
 	reload_shader();
 
