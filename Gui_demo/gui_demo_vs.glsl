@@ -18,13 +18,17 @@ out vec3 world_coord;
 out vec3 light_coord;
 out vec3 normal_vec;
 out vec3 view_coord;
+out float d;
 
 
 void main(void)
 {
-	vec3 d = vec3(0.0, 0.0, sin(time) * animate * pos_attrib.x);
-	gl_Position = P*(V*M)*vec4(pos_attrib + d, 1.0f);
+	vec3 animation = vec3(0.0, 0.0, sin(time) * animate * pos_attrib.x);
+
+	gl_Position = P*(V*M)*vec4(pos_attrib + animation, 1.0f);
 	tex_coord = tex_coord_attrib;
+
+	d = distance(pls_position, pos_attrib);
 
 	// convert
 	// light vector, object vectorm, normal vector, view vector

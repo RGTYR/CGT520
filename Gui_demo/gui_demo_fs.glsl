@@ -8,12 +8,18 @@ uniform float animate;
 uniform float La_intensity;
 uniform float Ld_intensity;
 uniform float Ls_intensity;
+uniform vec3 ka;
+uniform vec3 kd;
+uniform vec3 ks;
+uniform float shininess;
+uniform bool kCheckbox;
 
 in vec2 tex_coord;
 in vec3 world_coord;
 in vec3 light_coord;
 in vec3 normal_vec;
 in vec3 view_coord;
+in float d;
 
 out vec4 fragcolor;
      
@@ -32,12 +38,28 @@ void main(void)
    float diff = max(dot(nw, lw), 0.0);
    vec3 diffuse_colour = diff * light_colour * Ld_intensity;
 
-   int shininess = 32;
    float spec = pow(max(dot(vw, rw), 0.0f), shininess);
    vec3 specular_colour = spec * light_colour * Ls_intensity;
 
+   // The quadratic attenuation
+   float attenuation_a = 0.0;
+   float attenuation_b = 0.0;
+   float attenuation_c = 1.0;
+   float attenuation = attenuation_a + attenuation_b * d + attenuation_c * d * d;
+
+
    fragcolor = tex_color * fragment_color;
-   fragcolor.rgb = fragcolor.rgb * (ambient_colour + diffuse_colour + specular_colour);
+   if (kCheckbox)
+   {
+	   fragcolor.rgb = fragcolor.rgb * (ambient_colour + (diffuse_colour + specular_colour) / attenuation);
+   }
+   else 
+   {
+	   fragcolor.rgb = ka * ambient_colour + 
+		   kd * diffuse_colour / attenuation + 
+		   fragcolor.rgb * specular_colour / attenuation;
+   }
+   
 }
 
 

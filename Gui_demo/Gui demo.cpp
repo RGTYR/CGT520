@@ -53,7 +53,7 @@ float Ls_intensity = 0.0;
 glm::vec3 ka = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 kd = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 ks = glm::vec3(0.0f, 0.0f, 0.0f);
-float shininess = 0.0f;
+float shininess = 1.0f;
 bool kCheckbox = true;
 
 //Draw the ImGui user interface
@@ -87,7 +87,7 @@ void draw_gui()
 	ImGui::End();
 
 	ImGui::Begin("Junjie_Lighting");
-	ImGui::SliderFloat3("Point Light Source", &pls_position.x, -10.0f, +10.0f);
+	ImGui::SliderFloat3("Point Light Source", &pls_position.x, -2.0f, +2.0f);
 	ImGui::SliderFloat("La intensity", &La_intensity, 0.0f, +1.0f);
 	ImGui::SliderFloat("Ld intensity", &Ld_intensity, 0.0f, +1.0f);
 	ImGui::SliderFloat("Ls intensity", &Ls_intensity, 0.0f, +1.0f);
@@ -198,6 +198,24 @@ void display()
 		glUniform3fv(pls_position_loc, 1, &pls_position.x);
 	}
 
+	int ka_loc = glGetUniformLocation(shader_program, "ka");
+	if (ka_loc != -1)
+	{
+		glUniform3fv(ka_loc, 1, &ka.x);
+	}
+
+	int kd_loc = glGetUniformLocation(shader_program, "kd");
+	if (kd_loc != -1)
+	{
+		glUniform3fv(kd_loc, 1, &kd.x);
+	}
+
+	int ks_loc = glGetUniformLocation(shader_program, "ks");
+	if (ks_loc != -1)
+	{
+		glUniform3fv(ks_loc, 1, &ks.x);
+	}
+
 	int La_intensity_loc = glGetUniformLocation(shader_program, "La_intensity");
 	if (La_intensity_loc != -1)
 	{
@@ -220,6 +238,18 @@ void display()
 	if (camera_pos_loc != -1)
 	{
 		glUniform3fv(camera_pos_loc, 1, camera_pos);
+	}
+
+	int shininess_loc = glGetUniformLocation(shader_program, "shininess");
+	if (shininess_loc != -1)
+	{
+		glUniform1f(shininess_loc, shininess); // we bound our texture to texture unit 0
+	}
+
+	int kCheckbox_loc = glGetUniformLocation(shader_program, "kCheckbox");
+	if (kCheckbox_loc != -1)
+	{
+		glUniform1f(kCheckbox_loc, kCheckbox); // we bound our texture to texture unit 0
 	}
 
 	glBindVertexArray(mesh_data.mVao);
