@@ -53,6 +53,7 @@ GLuint cube_vao = -1;
 float camangle = 0.0f;
 glm::vec3 campos(0.0f, 1.0f, 2.0f);
 float aspect = 1.0f;
+bool isTriangles = false;
 
 void draw_gui()
 {
@@ -65,6 +66,7 @@ void draw_gui()
    ImGui::Checkbox("Draw mesh", &mesh_enabled); ImGui::SameLine();
    ImGui::SliderFloat3("Cam Pos", &campos[0], -20.0f, +20.0f);
    ImGui::SliderFloat("Cam Angle", &camangle, -180.0f, +180.0f);
+   ImGui::Checkbox("Triangles", &isTriangles);
 
    ImGui::End();
 
@@ -156,7 +158,17 @@ void draw_surf(const glm::mat4& P, const glm::mat4& V)
    }
 
    glBindVertexArray(surf_vao);
-   draw_surf(surf_vao);
+   
+   if (isTriangles)
+   {
+	   glPolygonMode(GL_FRONT, GL_LINE);
+	   draw_surf_triangles(surf_vao);
+   }
+   else
+   {
+	   draw_surf_points(surf_vao);
+   }
+
 }
 
 // glut display callback function.

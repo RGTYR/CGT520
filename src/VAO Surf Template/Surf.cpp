@@ -38,11 +38,23 @@ glm::vec3 circle(int i)
 GLuint create_surf_vbo()
 {
    //Declare a vector to hold N vertices
-   std::vector<glm::vec3> surf_verts(N);
+   std::vector<glm::vec3> surf_verts(N * N);
 
-   for(int i=0; i<N; i++)
+   //for(int i=0; i<N; i++)
+   //{
+   //   surf_verts[i] = circle(i);
+   //}
+
+   for (int i = 0; i < N; i++)
    {
-      surf_verts[i] = circle(i);
+	   for (int j = 0; j < N; j++)
+	   {
+		   glm::vec3 temp = surf(i, j);
+		   float x_ = temp.x;
+		   float y_ = temp.y;
+		   float z_ = temp.z;
+		   surf_verts[i * N + j] = surf(i, j);
+	   }
    }
 
    GLuint vbo;
@@ -51,7 +63,7 @@ GLuint create_surf_vbo()
    glBindBuffer(GL_ARRAY_BUFFER, vbo); //Specify the buffer where vertex attribute data is stored.
    
    //Upload from main memory to gpu memory.
-   glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*surf_verts.size(), surf_verts.data(), GL_DYNAMIC_DRAW);
+   glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*surf_verts.size(), surf_verts.data(), GL_STATIC_DRAW);
 
    return vbo;
 }
@@ -73,13 +85,18 @@ GLuint create_surf_vao()
    glEnableVertexAttribArray(pos_loc); //Enable the position attribute.
 
    //Tell opengl how to get the attribute values out of the vbo (stride and offset).
-   glVertexAttribPointer(pos_loc, 3, GL_FLOAT, false, 3*sizeof(float), 0);
+   glVertexAttribPointer(pos_loc, 3, GL_FLOAT, false, 0, 0);
    glBindVertexArray(0); //unbind the vao
 
    return vao;
 }
 
-void draw_surf(GLuint vao)
+void draw_surf_points(GLuint vao)
 {
-   glDrawArrays(GL_LINE_LOOP, 0, N);
+   glDrawArrays(GL_POINTS, 0, N * N);
+}
+
+void draw_surf_triangles(GLuint vao)
+{
+	glDrawArrays(GL_TRIANGLES, 0, N * N);
 }
