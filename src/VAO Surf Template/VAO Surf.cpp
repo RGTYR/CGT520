@@ -53,7 +53,7 @@ GLuint cube_vao = -1;
 float camangle = 0.0f;
 glm::vec3 campos(0.0f, 1.0f, 2.0f);
 float aspect = 1.0f;
-bool isTriangles = false;
+bool isTriangles = true;
 
 void draw_gui()
 {
@@ -161,8 +161,9 @@ void draw_surf(const glm::mat4& P, const glm::mat4& V)
    
    if (isTriangles)
    {
-	   glPolygonMode(GL_FRONT, GL_LINE);
+	   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	   draw_surf_triangles(surf_vao);
+	   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    }
    else
    {
@@ -237,7 +238,7 @@ void initOpenGl()
    cube_vao = create_cube_vao();
 
    surf_shader_program = InitShader(surf_vs.c_str(), surf_fs.c_str());
-   surf_vao = create_surf_vao();
+   surf_vao = create_triangles_vao();
 
    ImGui_ImplGlut_Init(); // initialize the imgui system
 }

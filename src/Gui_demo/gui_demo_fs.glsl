@@ -42,9 +42,9 @@ void main(void)
    vec3 specular_colour = spec * light_colour * Ls_intensity;
 
    // The quadratic attenuation
-   float attenuation_a = 0.0;
-   float attenuation_b = 0.0;
-   float attenuation_c = 1.0;
+   float attenuation_a = 1.0;
+   float attenuation_b = 0.1;
+   float attenuation_c = 0.1;
    float attenuation = attenuation_a + attenuation_b * d + attenuation_c * d * d;
 
 

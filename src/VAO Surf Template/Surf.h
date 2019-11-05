@@ -5,6 +5,7 @@
 #include <GL/glew.h>
 
 GLuint create_surf_vao();
+GLuint create_triangles_vao();
 void draw_surf_points(GLuint vao);
 void draw_surf_triangles(GLuint vao);
 
