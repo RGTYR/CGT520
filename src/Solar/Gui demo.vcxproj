@@ -92,6 +92,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="LoadMesh.cpp" />
     <ClCompile Include="LoadTexture.cpp" />
+    <ClCompile Include="Planet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -105,6 +106,7 @@
     <ClInclude Include="InitShader.h" />
     <ClInclude Include="LoadMesh.h" />
     <ClInclude Include="LoadTexture.h" />
+    <ClInclude Include="Planet.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gui_demo_fs.glsl" />

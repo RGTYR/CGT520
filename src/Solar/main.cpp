@@ -228,7 +228,7 @@ void motion(int x, int y)
 {
 	ImGui_ImplGlut_MouseMotionCallback(x, y);
 
-	camera.cameraTarget = camera.cameraDir(x, y, 0.2);
+	camera.cameraTarget = camera.cameraDir(x, y, 0.2f);
 }
 
 void mouse(int button, int state, int x, int y)
