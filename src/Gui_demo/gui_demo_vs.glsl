@@ -1,4 +1,4 @@
-#version 400            
+#version 400
 uniform mat4 PVM;
 uniform mat4 P;
 uniform mat4 V;
@@ -25,7 +25,7 @@ void main(void)
 {
 	vec3 animation = vec3(0.0, 0.0, sin(time) * animate * pos_attrib.x);
 
-	gl_Position = P*(V*M)*vec4(pos_attrib + animation, 1.0f);
+	gl_Position = P * (V*M)*vec4(pos_attrib + animation, 1.0f);
 	tex_coord = tex_coord_attrib;
 
 	d = distance(pls_position, pos_attrib);

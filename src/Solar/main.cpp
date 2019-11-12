@@ -52,18 +52,18 @@ void draw_gui()
 	ImGui::ShowTestWindow(&show_test);
 
 	ImGui::Render();
- }
+}
 
 // glut display callback function.
 // This function gets called every time the scene gets redisplayed 
 void display()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear the back buffer
-	
+
 	glm::mat4 M = glm::rotate(angle, glm::vec3(0.0f, 1.0f, 0.0f))*glm::scale(glm::vec3(scale*mesh_data.mScaleFactor));
 	glm::mat4 V = glm::lookAt(camera.cameraPos, camera.cameraPos + camera.cameraTarget, camera.worldUp);
 	glm::mat4 P = glm::perspective(40.0f, 1.0f, 0.1f, 100.0f);
-	
+
 
 	glUseProgram(shader_program);
 	glActiveTexture(GL_TEXTURE0);
@@ -71,7 +71,7 @@ void display()
 	int PVM_loc = glGetUniformLocation(shader_program, "PVM");
 	if (PVM_loc != -1)
 	{
-		glm::mat4 PVM = P*V*M;
+		glm::mat4 PVM = P * V*M;
 		glUniformMatrix4fv(PVM_loc, 1, false, glm::value_ptr(PVM));
 	}
 
@@ -84,7 +84,7 @@ void display()
 	int VM_loc = glGetUniformLocation(shader_program, "VM");
 	if (VM_loc != -1)
 	{
-		glm::mat4 VM = V*M;
+		glm::mat4 VM = V * M;
 		glUniformMatrix4fv(VM_loc, 1, false, glm::value_ptr(VM));
 	}
 
@@ -165,42 +165,42 @@ void keyboard(unsigned char key, int x, int y)
 {
 	ImGui_ImplGlut_KeyCallback(key);
 
-	switch(key)
+	switch (key)
 	{
-		case 'r':
-		case 'R':
-			reload_shader();	  
-			break;
+	case 'r':
+	case 'R':
+		reload_shader();
+		break;
 
-		case 'w':
-		case 'W':
-			camera.move(FORWARD);
-			break;
+	case 'w':
+	case 'W':
+		camera.move(FORWARD);
+		break;
 
-		case 's':
-		case 'S':
-			camera.move(BACKWARD);
-			break;
+	case 's':
+	case 'S':
+		camera.move(BACKWARD);
+		break;
 
-		case 'a':
-		case 'A':
-			camera.move(LEFT);
-			break;
+	case 'a':
+	case 'A':
+		camera.move(LEFT);
+		break;
 
-		case 'd':
-		case 'D':
-			camera.move(RIGHT);
-			break;
+	case 'd':
+	case 'D':
+		camera.move(RIGHT);
+		break;
 
-		case 'q':
-		case 'Q':
-			camera.move(UP);
-			break;
+	case 'q':
+	case 'Q':
+		camera.move(UP);
+		break;
 
-		case 'e':
-		case 'E':
-			camera.move(DOWN);
-			break;
+	case 'e':
+	case 'E':
+		camera.move(DOWN);
+		break;
 	}
 }
 
@@ -216,7 +216,7 @@ void special_up(int key, int x, int y)
 
 void passive(int x, int y)
 {
-	ImGui_ImplGlut_PassiveMouseMotionCallback(x,y);
+	ImGui_ImplGlut_PassiveMouseMotionCallback(x, y);
 }
 
 void special(int key, int x, int y)
@@ -237,19 +237,19 @@ void mouse(int button, int state, int x, int y)
 }
 
 
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
 	//Configure initial window state
-	glutInit(&argc, argv); 
-	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-	glutInitWindowPosition (5, 5);
-	glutInitWindowSize (1080, 1080);
-	int win = glutCreateWindow ("GUI demo");
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+	glutInitWindowPosition(5, 5);
+	glutInitWindowSize(1080, 1080);
+	int win = glutCreateWindow("GUI demo");
 
 	printGlInfo();
 
 	//Register callback functions with glut. 
-	glutDisplayFunc(display); 
+	glutDisplayFunc(display);
 	glutKeyboardFunc(keyboard);
 	glutSpecialFunc(special);
 	glutKeyboardUpFunc(keyboard_up);
@@ -265,5 +265,5 @@ int main (int argc, char **argv)
 	//Enter the glut event loop.
 	glutMainLoop();
 	glutDestroyWindow(win);
-	return 0;		
+	return 0;
 }

@@ -22,44 +22,44 @@ in vec3 view_coord;
 in float d;
 
 out vec4 fragcolor;
-     
+
 void main(void)
-{   
-   vec4 tex_color = texture(diffuse_tex, tex_coord);
+{
+	vec4 tex_color = texture(diffuse_tex, tex_coord);
 
-   vec3 lw = normalize(world_coord - light_coord);
-   vec3 nw = normalize(normal_vec);
-   vec3 vw = normalize(view_coord - world_coord);
-   vec3 rw = reflect(-lw, nw);
+	vec3 lw = normalize(world_coord - light_coord);
+	vec3 nw = normalize(normal_vec);
+	vec3 vw = normalize(view_coord - world_coord);
+	vec3 rw = reflect(-lw, nw);
 
-   vec3 light_colour = vec3(0.5f, 0.5f, 0.5f);
-   vec3 ambient_colour = light_colour * La_intensity;
+	vec3 light_colour = vec3(0.5f, 0.5f, 0.5f);
+	vec3 ambient_colour = light_colour * La_intensity;
 
-   float diff = max(dot(nw, lw), 0.0);
-   vec3 diffuse_colour = diff * light_colour * Ld_intensity;
+	float diff = max(dot(nw, lw), 0.0);
+	vec3 diffuse_colour = diff * light_colour * Ld_intensity;
 
-   float spec = pow(max(dot(vw, rw), 0.0f), shininess);
-   vec3 specular_colour = spec * light_colour * Ls_intensity;
+	float spec = pow(max(dot(vw, rw), 0.0f), shininess);
+	vec3 specular_colour = spec * light_colour * Ls_intensity;
 
-   // The quadratic attenuation
-   float attenuation_a = 1.0;
-   float attenuation_b = 0.1;
-   float attenuation_c = 0.1;
-   float attenuation = attenuation_a + attenuation_b * d + attenuation_c * d * d;
+	// The quadratic attenuation
+	float attenuation_a = 1.0;
+	float attenuation_b = 0.1;
+	float attenuation_c = 0.1;
+	float attenuation = attenuation_a + attenuation_b * d + attenuation_c * d * d;
 
 
-   fragcolor = tex_color * fragment_color;
-   if (kCheckbox)
-   {
-	   fragcolor.rgb = fragcolor.rgb * (ambient_colour + (diffuse_colour + specular_colour) / attenuation);
-   }
-   else 
-   {
-	   fragcolor.rgb = ka * ambient_colour + 
-		   kd * diffuse_colour / attenuation + 
-		   fragcolor.rgb * specular_colour / attenuation;
-   }
-   
+	fragcolor = tex_color * fragment_color;
+	if (kCheckbox)
+	{
+		fragcolor.rgb = fragcolor.rgb * (ambient_colour + (diffuse_colour + specular_colour) / attenuation);
+	}
+	else
+	{
+		fragcolor.rgb = ka * ambient_colour +
+			kd * diffuse_colour / attenuation +
+			fragcolor.rgb * specular_colour / attenuation;
+	}
+
 }
 
 

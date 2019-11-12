@@ -102,7 +102,7 @@ void draw_gui()
 	ImGui::ShowTestWindow(&show_test);
 
 	ImGui::Render();
- }
+}
 
 // glut display callback function.
 // This function gets called every time the scene gets redisplayed 
@@ -141,8 +141,8 @@ void display()
 		M = R * T * S;
 	}
 	// V controls the attribute of camera
-	glm::mat4 V = glm::lookAt(glm::vec3(camera_pos[0], camera_pos[1], camera_pos[2]), 
-		glm::vec3(0.0f, 0.0f, 0.0f), 
+	glm::mat4 V = glm::lookAt(glm::vec3(camera_pos[0], camera_pos[1], camera_pos[2]),
+		glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 P = glm::perspective(fovy, 1.0f, zNear, zFar);
 
@@ -152,7 +152,7 @@ void display()
 	int PVM_loc = glGetUniformLocation(shader_program, "PVM");
 	if (PVM_loc != -1)
 	{
-		glm::mat4 PVM = P*V*M;
+		glm::mat4 PVM = P * V*M;
 		glUniformMatrix4fv(PVM_loc, 1, false, glm::value_ptr(PVM));
 	}
 
@@ -300,10 +300,10 @@ void reload_shader()
 
 void printGlInfo()
 {
-	std::cout << "Vendor: "			<< glGetString(GL_VENDOR)					<< std::endl;
-	std::cout << "Renderer: "		<< glGetString(GL_RENDERER)					<< std::endl;
-	std::cout << "Version: "		<< glGetString(GL_VERSION)					<< std::endl;
-	std::cout << "GLSL Version: "	<< glGetString(GL_SHADING_LANGUAGE_VERSION)	<< std::endl;
+	std::cout << "Vendor: " << glGetString(GL_VENDOR) << std::endl;
+	std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
+	std::cout << "Version: " << glGetString(GL_VERSION) << std::endl;
+	std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 }
 
 void initOpenGl()
@@ -326,11 +326,11 @@ void keyboard(unsigned char key, int x, int y)
 {
 	ImGui_ImplGlut_KeyCallback(key);
 
-	switch(key)
+	switch (key)
 	{
-		case 'r':
-		case 'R':
-			reload_shader();	  
+	case 'r':
+	case 'R':
+		reload_shader();
 		break;
 	}
 }
@@ -347,7 +347,7 @@ void special_up(int key, int x, int y)
 
 void passive(int x, int y)
 {
-	ImGui_ImplGlut_PassiveMouseMotionCallback(x,y);
+	ImGui_ImplGlut_PassiveMouseMotionCallback(x, y);
 }
 
 void special(int key, int x, int y)
@@ -366,19 +366,19 @@ void mouse(int button, int state, int x, int y)
 }
 
 
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
 	//Configure initial window state
-	glutInit(&argc, argv); 
-	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-	glutInitWindowPosition (5, 5);
-	glutInitWindowSize (1080, 1080);
-	int win = glutCreateWindow ("GUI demo");
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+	glutInitWindowPosition(5, 5);
+	glutInitWindowSize(1080, 1080);
+	int win = glutCreateWindow("GUI demo");
 
 	printGlInfo();
 
 	//Register callback functions with glut. 
-	glutDisplayFunc(display); 
+	glutDisplayFunc(display);
 	glutKeyboardFunc(keyboard);
 	glutSpecialFunc(special);
 	glutKeyboardUpFunc(keyboard_up);
@@ -394,5 +394,5 @@ int main (int argc, char **argv)
 	//Enter the glut event loop.
 	glutMainLoop();
 	glutDestroyWindow(win);
-	return 0;		
+	return 0;
 }

@@ -19,6 +19,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Planet.cpp" />
+    <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="Sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\imgui\imconfig.h" />
@@ -45,6 +47,8 @@
     </ClInclude>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Planet.h" />
+    <ClInclude Include="Cube.h" />
+    <ClInclude Include="Sphere.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gui_demo_fs.glsl" />
