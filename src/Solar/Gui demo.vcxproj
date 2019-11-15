@@ -116,6 +116,8 @@
   <ItemGroup>
     <None Include="gui_demo_fs.glsl" />
     <None Include="gui_demo_vs.glsl" />
+    <None Include="sun_fs.glsl" />
+    <None Include="sun_vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

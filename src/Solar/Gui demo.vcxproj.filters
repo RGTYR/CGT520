@@ -51,12 +51,25 @@
     <ClInclude Include="Sphere.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="gui_demo_fs.glsl" />
-    <None Include="gui_demo_vs.glsl" />
+    <None Include="gui_demo_fs.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="gui_demo_vs.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="sun_fs.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="sun_vs.glsl">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">
       <UniqueIdentifier>{9af1a19f-5264-49df-9655-5716798e96f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{9ebd4420-12ed-41c7-9daf-9c8f7b7baac1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

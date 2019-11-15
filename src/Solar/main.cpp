@@ -21,6 +21,7 @@
 
 // Functions for camera
 #include "Camera.h"
+#include "Sphere.h"
 
 static const std::string vertex_shader("gui_demo_vs.glsl");
 static const std::string fragment_shader("gui_demo_fs.glsl");
@@ -32,6 +33,15 @@ static const std::string mesh_name = "Amago0.obj";
 static const std::string texture_name = "AmagoT.bmp";
 MeshData mesh_data;
 
+// Sun files and IDs
+Sphere sun(64, 64, 1);
+static const std::string sun_vs("sun_vs.glsl");
+static const std::string sun_fs("sun_fs.glsl");
+GLuint sun_shader_program = -1;
+GLuint sun_vao = -1;
+GLuint sun_texture_id = -1;
+static const std::string sun_texture_name = "sunmap.bmp";
+
 float angle = 0.0f;
 float scale = 1.0f;
 Camera camera;
@@ -41,12 +51,12 @@ void draw_gui()
 {
 	ImGui_ImplGlut_NewFrame();
 
-	ImGui::Begin("Debug menu");
-	//uncomment the following line to create a sliders which changes the viewing angle and scale
-	ImGui::SliderFloat("View angle", &angle, -180.0f, +180.0f);
-	ImGui::SliderFloat("Scale", &scale, -10.0f, +10.0f);
-	ImGui::SliderFloat3("Camera Position", &camera.cameraPos.x, -10.0f, +10.0f);
-	ImGui::End();
+	//ImGui::Begin("Debug menu");
+	////uncomment the following line to create a sliders which changes the viewing angle and scale
+	//ImGui::SliderFloat("View angle", &angle, -180.0f, +180.0f);
+	//ImGui::SliderFloat("Scale", &scale, -10.0f, +10.0f);
+	//ImGui::SliderFloat3("Camera Position", &camera.cameraPos.x, -10.0f, +10.0f);
+	//ImGui::End();
 
 	static bool show_test = false;
 	ImGui::ShowTestWindow(&show_test);
@@ -54,20 +64,14 @@ void draw_gui()
 	ImGui::Render();
 }
 
-// glut display callback function.
-// This function gets called every time the scene gets redisplayed 
-void display()
+void draw_fish(const glm::mat4& V, const glm::mat4& P)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear the back buffer
-
 	glm::mat4 M = glm::rotate(angle, glm::vec3(0.0f, 1.0f, 0.0f))*glm::scale(glm::vec3(scale*mesh_data.mScaleFactor));
-	glm::mat4 V = glm::lookAt(camera.cameraPos, camera.cameraPos + camera.cameraTarget, camera.worldUp);
-	glm::mat4 P = glm::perspective(40.0f, 1.0f, 0.1f, 100.0f);
-
 
 	glUseProgram(shader_program);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture_id);
+
 	int PVM_loc = glGetUniformLocation(shader_program, "PVM");
 	if (PVM_loc != -1)
 	{
@@ -96,8 +100,51 @@ void display()
 	}
 
 	glBindVertexArray(mesh_data.mVao);
-	glDrawElements(GL_TRIANGLES, mesh_data.mSubmesh[0].mNumIndices, GL_UNSIGNED_INT, 0);
-	//For meshes with multiple submeshes use mesh_data.DrawMesh(); 
+	// glDrawElements(GL_TRIANGLES, mesh_data.mSubmesh[0].mNumIndices, GL_UNSIGNED_INT, 0);
+	// For meshes with multiple submeshes use mesh_data.DrawMesh();
+	mesh_data.DrawMesh();
+
+}
+
+void draw_sun(const glm::mat4& V, const glm::mat4& P)
+{
+	glUseProgram(sun_shader_program);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, sun_texture_id);
+
+	int PVM_loc = glGetUniformLocation(sun_shader_program, "PVM");
+	if (PVM_loc != -1)
+	{
+		const int time_ms = glutGet(GLUT_ELAPSED_TIME);
+		float time_sec = 0.001f*time_ms;
+
+		glm::mat4 R = glm::rotate(sin(time_sec), glm::vec3(1.0f, 1.0f, 0.0f));
+		glm::mat4 M = R * glm::scale(glm::vec3(1.0f));
+		glm::mat4 PVM = P * V* M;
+		glUniformMatrix4fv(PVM_loc, 1, false, glm::value_ptr(PVM));
+	}
+
+	int tex_loc = glGetUniformLocation(sun_shader_program, "diffuse_tex");
+	if (tex_loc != -1)
+	{
+		glUniform1i(tex_loc, 1); // we bound our texture to texture unit 0
+	}
+
+	glBindVertexArray(sun_vao);
+	sun.drawSphere(sun_vao);
+}
+
+// glut display callback function.
+// This function gets called every time the scene gets redisplayed 
+void display()
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear the back buffer
+
+	glm::mat4 V = glm::lookAt(camera.cameraPos, camera.cameraPos + camera.cameraTarget, camera.worldUp);
+	glm::mat4 P = glm::perspective(40.0f, 1.0f, 0.1f, 100.0f);
+
+	draw_fish(V, P);
+	draw_sun(V, P);
 
 	draw_gui();
 
@@ -152,12 +199,22 @@ void initOpenGl()
 	glewInit();
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_POINT_SPRITE);       // allows textured points
+	glEnable(GL_PROGRAM_POINT_SIZE); //allows us to set point size in vertex shader
 
 	reload_shader();
 
 	//mesh and texture to be rendered
 	mesh_data = LoadMesh(mesh_name);
 	texture_id = LoadTexture(texture_name);
+
+	// create Sun
+	sun_shader_program = InitShader(sun_vs.c_str(), sun_fs.c_str());
+	sun_vao = sun.getVAO();
+	sun_texture_id = LoadTexture(sun_texture_name);
+
+	// initialize the imgui system
+	ImGui_ImplGlut_Init();
 }
 
 // glut callbacks need to send keyboard and mouse events to imgui
