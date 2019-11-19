@@ -13,7 +13,7 @@ void main(void)
 {   
    vec3 npos = normalize(pos);
    // fragcolor = mix(color2, color1, npos.y+1.0);
-   fragcolor = texture(cubemap, pos);
+   fragcolor = texture(cubemap, pos) * 0.1;
 }
 
 

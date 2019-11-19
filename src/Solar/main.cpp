@@ -58,7 +58,8 @@ GLuint sun_texture_id = -1;
 static const std::string sun_texture_name = "sunmap.bmp";
 
 // Mercury files and IDs
-Planet mercury(0.15, 10, 0.58, 0.87);
+// size: 0.15
+Planet mercury(1, 10, 0.58, 0.87);
 static const std::string mercury_vs("mercury_vs.glsl");
 static const std::string mercury_fs("mercury_fs.glsl");
 GLuint mercury_shader_program = -1;
@@ -67,7 +68,8 @@ GLuint mercury_texture_id = -1;
 static const std::string mercury_texture_name = "mercurymap.bmp";
 
 // venus files and IDs
-Planet venus(0.45, 20, 2.43, 2.24);
+// size: 0.45
+Planet venus(1, 20, 2.43, 2.24);
 static const std::string venus_vs("venus_vs.glsl");
 static const std::string venus_fs("venus_fs.glsl");
 GLuint venus_shader_program = -1;
@@ -75,6 +77,15 @@ GLuint venus_vao = -1;
 GLuint venus_texture_id = -1;
 static const std::string venus_texture_name = "venusmap.bmp";
 
+// earth files and IDs
+// size: 0.45
+Planet earth(1, 30, 0.01, 3.65);
+static const std::string earth_vs("earth_vs.glsl");
+static const std::string earth_fs("earth_fs.glsl");
+GLuint earth_shader_program = -1;
+GLuint earth_vao = -1;
+GLuint earth_texture_id = -1;
+static const std::string earth_texture_name = "earthmap.bmp";
 
 float angle = 0.0f;
 float scale = 1.0f;
@@ -275,6 +286,44 @@ void draw_venus(const glm::mat4& V, const glm::mat4& P)
 	sun.drawSphere(venus_vao);
 }
 
+void draw_earth(const glm::mat4& V, const glm::mat4& P)
+{
+	glUseProgram(earth_shader_program);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, earth_texture_id);
+
+	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
+	float time_sec = 0.001f*time_ms;
+	glm::mat4 M = earth.getMatrix(time_sec);
+
+	int PVM_loc = glGetUniformLocation(earth_shader_program, "PVM");
+	if (PVM_loc != -1)
+	{
+		glm::mat4 PVM = P * V * M;
+		glUniformMatrix4fv(PVM_loc, 1, false, glm::value_ptr(PVM));
+	}
+
+	int tex_loc = glGetUniformLocation(earth_shader_program, "diffuse_tex");
+	if (tex_loc != -1)
+	{
+		glUniform1i(tex_loc, 1); // we bound our texture to texture unit 0
+	}
+
+	int M_loc = glGetUniformLocation(earth_shader_program, "M");
+	if (M_loc != -1)
+	{
+		glUniformMatrix4fv(M_loc, 1, false, glm::value_ptr(M));
+	}
+
+	int V_loc = glGetUniformLocation(earth_shader_program, "V");
+	if (V_loc != -1)
+	{
+		glUniformMatrix4fv(V_loc, 1, false, glm::value_ptr(V));
+	}
+
+	glBindVertexArray(earth_vao);
+	sun.drawSphere(earth_vao);
+}
 
 // glut display callback function.
 // This function gets called every time the scene gets redisplayed 
@@ -289,6 +338,7 @@ void display()
 	draw_sun(V, P);
 	draw_mercury(V, P);
 	draw_venus(V, P);
+	draw_earth(V, P);
 	draw_cube(V, P);
 
 	draw_gui();
@@ -367,6 +417,11 @@ void initOpenGl()
 	venus_shader_program = InitShader(venus_vs.c_str(), venus_fs.c_str());
 	venus_vao = venus.getVAO();
 	venus_texture_id = LoadTexture(venus_texture_name);
+
+	// create Earth
+	earth_shader_program = InitShader(earth_vs.c_str(), earth_fs.c_str());
+	earth_vao = earth.getVAO();
+	earth_texture_id = LoadTexture(earth_texture_name);
 
 	// skybox
 	cubemap_id = LoadCube(cube_name);
