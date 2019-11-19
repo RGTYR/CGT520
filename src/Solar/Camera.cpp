@@ -64,7 +64,7 @@ Camera::Camera(glm::vec3 pos, glm::vec3 target, glm::vec3 up)
 	yaw = 0.0f;
 	roll = 0.0f;
 
-	moveSpeed = 0.05f;
+	moveSpeed = 0.2f;
 
 	InitMouseDir = true;
 

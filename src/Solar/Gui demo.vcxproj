@@ -116,6 +116,8 @@
   <ItemGroup>
     <None Include="cube_fs.glsl" />
     <None Include="cube_vs.glsl" />
+    <None Include="earth_fs.glsl" />
+    <None Include="earth_vs.glsl" />
     <None Include="gui_demo_fs.glsl" />
     <None Include="gui_demo_vs.glsl" />
     <None Include="mercury_fs.glsl" />

@@ -81,6 +81,12 @@
     <None Include="venus_vs.glsl">
       <Filter>shaders</Filter>
     </None>
+    <None Include="earth_fs.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="earth_vs.glsl">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">
