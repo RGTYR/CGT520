@@ -11,7 +11,7 @@
 class Sphere
 {
 public:
-	Sphere(int stacks, int sectors, float radius);
+	Sphere(int stacks = 128, int sectors = 128, float radius = 1.0f);
 	~Sphere();
 
 	// calculate and return vector which stores the vectices of sphere

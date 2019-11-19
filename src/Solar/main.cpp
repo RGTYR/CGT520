@@ -21,26 +21,60 @@
 
 // Functions for camera
 #include "Camera.h"
+// Class of Sphere and Planet
 #include "Sphere.h"
+#include "Planet.h"
+// Functions for skybox
+#include "Cube.h"
+
 
 static const std::string vertex_shader("gui_demo_vs.glsl");
 static const std::string fragment_shader("gui_demo_fs.glsl");
-
+//Texture map for fish
 GLuint shader_program = -1;
-GLuint texture_id = -1; //Texture map for fish
+GLuint texture_id = -1;
 
 static const std::string mesh_name = "Amago0.obj";
 static const std::string texture_name = "AmagoT.bmp";
 MeshData mesh_data;
 
+// Cube files and IDs
+static const std::string cube_vs("cube_vs.glsl");
+static const std::string cube_fs("cube_fs.glsl");
+GLuint cube_shader_program = -1;
+GLuint cube_vao = -1;
+// Texture id for cubemap
+static const std::string cube_name = "cubemap";
+GLuint cubemap_id = -1;
+
+
 // Sun files and IDs
-Sphere sun(64, 64, 1);
+Planet sun(5, 0, 0.25, 100);
 static const std::string sun_vs("sun_vs.glsl");
 static const std::string sun_fs("sun_fs.glsl");
 GLuint sun_shader_program = -1;
 GLuint sun_vao = -1;
 GLuint sun_texture_id = -1;
 static const std::string sun_texture_name = "sunmap.bmp";
+
+// Mercury files and IDs
+Planet mercury(0.15, 10, 0.58, 0.87);
+static const std::string mercury_vs("mercury_vs.glsl");
+static const std::string mercury_fs("mercury_fs.glsl");
+GLuint mercury_shader_program = -1;
+GLuint mercury_vao = -1;
+GLuint mercury_texture_id = -1;
+static const std::string mercury_texture_name = "mercurymap.bmp";
+
+// venus files and IDs
+Planet venus(0.45, 20, 2.43, 2.24);
+static const std::string venus_vs("venus_vs.glsl");
+static const std::string venus_fs("venus_fs.glsl");
+GLuint venus_shader_program = -1;
+GLuint venus_vao = -1;
+GLuint venus_texture_id = -1;
+static const std::string venus_texture_name = "venusmap.bmp";
+
 
 float angle = 0.0f;
 float scale = 1.0f;
@@ -63,6 +97,34 @@ void draw_gui()
 
 	ImGui::Render();
 }
+
+
+void draw_cube(const glm::mat4& V, const glm::mat4& P)
+{
+	glUseProgram(cube_shader_program);
+	int PVM_loc = glGetUniformLocation(cube_shader_program, "PVM");
+	if (PVM_loc != -1)
+	{
+		glm::mat4 Msky = glm::scale(glm::vec3(200.0f));
+		glm::mat4 PVM = P * V * Msky;
+		PVM[3] = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		glUniformMatrix4fv(PVM_loc, 1, false, glm::value_ptr(PVM));
+	}
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap_id);
+	int cube_loc = glGetUniformLocation(cube_shader_program, "cubemap");
+	if (cube_loc != -1)
+	{
+		glUniform1i(cube_loc, 1); // we bound our texture to texture unit 1
+	}
+
+	glDepthMask(GL_FALSE);
+	glBindVertexArray(cube_vao);
+	draw_cube(cube_vao);
+	glDepthMask(GL_TRUE);
+}
+
 
 void draw_fish(const glm::mat4& V, const glm::mat4& P)
 {
@@ -118,9 +180,10 @@ void draw_sun(const glm::mat4& V, const glm::mat4& P)
 		const int time_ms = glutGet(GLUT_ELAPSED_TIME);
 		float time_sec = 0.001f*time_ms;
 
-		glm::mat4 R = glm::rotate(sin(time_sec), glm::vec3(1.0f, 1.0f, 0.0f));
-		glm::mat4 M = R * glm::scale(glm::vec3(1.0f));
-		glm::mat4 PVM = P * V* M;
+		// glm::mat4 R = glm::rotate(sin(time_sec), glm::vec3(1.0f, 1.0f, 0.0f));
+		// glm::mat4 M = R * glm::scale(glm::vec3(1.0f));
+		glm::mat4 M = sun.getMatrix(time_sec);
+		glm::mat4 PVM = P * V * M;
 		glUniformMatrix4fv(PVM_loc, 1, false, glm::value_ptr(PVM));
 	}
 
@@ -134,6 +197,85 @@ void draw_sun(const glm::mat4& V, const glm::mat4& P)
 	sun.drawSphere(sun_vao);
 }
 
+void draw_mercury(const glm::mat4& V, const glm::mat4& P)
+{
+	glUseProgram(mercury_shader_program);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, mercury_texture_id);
+
+	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
+	float time_sec = 0.001f*time_ms;
+	glm::mat4 M = mercury.getMatrix(time_sec);
+
+	int PVM_loc = glGetUniformLocation(mercury_shader_program, "PVM");
+	if (PVM_loc != -1)
+	{
+		glm::mat4 PVM = P * V * M;
+		glUniformMatrix4fv(PVM_loc, 1, false, glm::value_ptr(PVM));
+	}
+
+	int tex_loc = glGetUniformLocation(mercury_shader_program, "diffuse_tex");
+	if (tex_loc != -1)
+	{
+		glUniform1i(tex_loc, 1); // we bound our texture to texture unit 0
+	}
+
+	int M_loc = glGetUniformLocation(mercury_shader_program, "M");
+	if (M_loc != -1)
+	{
+		glUniformMatrix4fv(M_loc, 1, false, glm::value_ptr(M));
+	}
+
+	int V_loc = glGetUniformLocation(mercury_shader_program, "V");
+	if (V_loc != -1)
+	{
+		glUniformMatrix4fv(V_loc, 1, false, glm::value_ptr(V));
+	}
+
+	glBindVertexArray(mercury_vao);
+	sun.drawSphere(mercury_vao);
+}
+
+void draw_venus(const glm::mat4& V, const glm::mat4& P)
+{
+	glUseProgram(venus_shader_program);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, venus_texture_id);
+
+	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
+	float time_sec = 0.001f*time_ms;
+	glm::mat4 M = venus.getMatrix(time_sec);
+
+	int PVM_loc = glGetUniformLocation(venus_shader_program, "PVM");
+	if (PVM_loc != -1)
+	{
+		glm::mat4 PVM = P * V * M;
+		glUniformMatrix4fv(PVM_loc, 1, false, glm::value_ptr(PVM));
+	}
+
+	int tex_loc = glGetUniformLocation(venus_shader_program, "diffuse_tex");
+	if (tex_loc != -1)
+	{
+		glUniform1i(tex_loc, 1); // we bound our texture to texture unit 0
+	}
+
+	int M_loc = glGetUniformLocation(venus_shader_program, "M");
+	if (M_loc != -1)
+	{
+		glUniformMatrix4fv(M_loc, 1, false, glm::value_ptr(M));
+	}
+
+	int V_loc = glGetUniformLocation(venus_shader_program, "V");
+	if (V_loc != -1)
+	{
+		glUniformMatrix4fv(V_loc, 1, false, glm::value_ptr(V));
+	}
+
+	glBindVertexArray(venus_vao);
+	sun.drawSphere(venus_vao);
+}
+
+
 // glut display callback function.
 // This function gets called every time the scene gets redisplayed 
 void display()
@@ -143,8 +285,11 @@ void display()
 	glm::mat4 V = glm::lookAt(camera.cameraPos, camera.cameraPos + camera.cameraTarget, camera.worldUp);
 	glm::mat4 P = glm::perspective(40.0f, 1.0f, 0.1f, 100.0f);
 
-	draw_fish(V, P);
+	// draw_fish(V, P);
 	draw_sun(V, P);
+	draw_mercury(V, P);
+	draw_venus(V, P);
+	draw_cube(V, P);
 
 	draw_gui();
 
@@ -212,6 +357,21 @@ void initOpenGl()
 	sun_shader_program = InitShader(sun_vs.c_str(), sun_fs.c_str());
 	sun_vao = sun.getVAO();
 	sun_texture_id = LoadTexture(sun_texture_name);
+
+	// create Mercury
+	mercury_shader_program = InitShader(mercury_vs.c_str(), mercury_fs.c_str());
+	mercury_vao = mercury.getVAO();
+	mercury_texture_id = LoadTexture(mercury_texture_name);
+
+	// create Venus
+	venus_shader_program = InitShader(venus_vs.c_str(), venus_fs.c_str());
+	venus_vao = venus.getVAO();
+	venus_texture_id = LoadTexture(venus_texture_name);
+
+	// skybox
+	cubemap_id = LoadCube(cube_name);
+	cube_shader_program = InitShader(cube_vs.c_str(), cube_fs.c_str());
+	cube_vao = create_cube_vao();
 
 	// initialize the imgui system
 	ImGui_ImplGlut_Init();

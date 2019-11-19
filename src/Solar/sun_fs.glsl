@@ -12,21 +12,3 @@ void main(void)
 	vec4 tex_color = texture(diffuse_tex, tex_coord);
 	fragcolor = tex_color;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -63,6 +63,24 @@
     <None Include="sun_vs.glsl">
       <Filter>shaders</Filter>
     </None>
+    <None Include="cube_fs.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="cube_vs.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="mercury_fs.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="mercury_vs.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="venus_fs.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="venus_vs.glsl">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">

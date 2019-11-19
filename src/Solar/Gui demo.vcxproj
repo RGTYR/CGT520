@@ -114,10 +114,16 @@
     <ClInclude Include="Sphere.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cube_fs.glsl" />
+    <None Include="cube_vs.glsl" />
     <None Include="gui_demo_fs.glsl" />
     <None Include="gui_demo_vs.glsl" />
+    <None Include="mercury_fs.glsl" />
+    <None Include="mercury_vs.glsl" />
     <None Include="sun_fs.glsl" />
     <None Include="sun_vs.glsl" />
+    <None Include="venus_fs.glsl" />
+    <None Include="venus_vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

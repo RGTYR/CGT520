@@ -5,18 +5,25 @@
 
 #include <glm/glm.hpp>
 #include <GL/glew.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
 
-class Planet
+#include "Sphere.h"
+
+
+class Planet: public Sphere
 {
 public:
 
 	float planetRadius;
-	glm::vec3 planetPos;
+	float planetPos;
 	float rotationSpeed;
 	float revolutionSpeed;
 
-	Planet(float radius, glm::vec3 pos, float rotation, float revolution);
+	Planet(float radius, float pos, float rotation, float revolution);
 	~Planet();
+
+	glm::mat4 getMatrix(float time_sec);
 
 private:
 
