@@ -18,7 +18,7 @@ glm::mat4 Planet::getMatrix(float time_sec)
 {
 	glm::mat4 M;
 
-	glm::mat4 Rotation = glm::rotate(time_sec / rotationSpeed, glm::vec3(1.0f, 1.0f, 0.0f));
+	glm::mat4 Rotation = glm::rotate(time_sec / rotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	glm::mat4 Scale = glm::scale(glm::vec3(planetRadius));
 

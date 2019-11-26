@@ -53,7 +53,7 @@ GLuint cubemap_id = -1;
 
 
 // Sun files and IDs
-Planet sun(109, 0, 0.25, 100);
+Planet sun(10.4, 0, 0.25, 100);
 static const std::string sun_vs("sun_vs.glsl");
 static const std::string sun_fs("sun_fs.glsl");
 GLuint sun_shader_program = -1;
@@ -61,8 +61,7 @@ GLuint sun_texture_id = -1;
 static const std::string sun_texture_name = "sunmap.bmp";
 
 // Mercury files and IDs
-// size: 0.15
-Planet mercury(0.38, 460, 0.58, 0.87);
+Planet mercury(0.61, 67, 0.58, 0.87);
 static const std::string mercury_vs("planet_vs.glsl");
 static const std::string mercury_fs("planet_fs.glsl");
 GLuint mercury_shader_program = -1;
@@ -70,8 +69,7 @@ GLuint mercury_texture_id = -1;
 static const std::string mercury_texture_name = "mercurymap.bmp";
 
 // venus files and IDs
-// size: 0.45
-Planet venus(0.95, 840, 2.43, 2.24);
+Planet venus(0.97, 91, 2.43, 2.24);
 static const std::string venus_vs("planet_vs.glsl");
 static const std::string venus_fs("planet_fs.glsl");
 GLuint venus_shader_program = -1;
@@ -79,13 +77,28 @@ GLuint venus_texture_id = -1;
 static const std::string venus_texture_name = "venusmap.bmp";
 
 // earth files and IDs
-// size: 0.45
-Planet earth(1, 1180, 0.01, 3.65);
+Planet earth(1, 109, 0.01, 3.65);
 static const std::string earth_vs("planet_vs.glsl");
 static const std::string earth_fs("planet_fs.glsl");
 GLuint earth_shader_program = -1;
 GLuint earth_texture_id = -1;
 static const std::string earth_texture_name = "earthmap.bmp";
+
+// mars files and IDs
+Planet mars(0.73, 133, 0.01, 6.86);
+static const std::string mars_vs("planet_vs.glsl");
+static const std::string mars_fs("planet_fs.glsl");
+GLuint mars_shader_program = -1;
+GLuint mars_texture_id = -1;
+static const std::string mars_texture_name = "marsmap.bmp";
+
+// jupiter files and IDs
+Planet jupiter(3.3, 246, 0.004, 40.0);
+static const std::string jupiter_vs("planet_vs.glsl");
+static const std::string jupiter_fs("planet_fs.glsl");
+GLuint jupiter_shader_program = -1;
+GLuint jupiter_texture_id = -1;
+static const std::string jupiter_texture_name = "jupitermap.bmp";
 
 float angle = 0.0f;
 float scale = 1.0f;
@@ -345,6 +358,90 @@ void draw_earth(const glm::mat4& V, const glm::mat4& P)
 	sun.drawSphere(earth_vao);*/
 }
 
+void draw_mars(const glm::mat4& V, const glm::mat4& P)
+{
+	glUseProgram(mars_shader_program);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, mars_texture_id);
+
+	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
+	float time_sec = 0.001f*time_ms;
+	glm::mat4 M = mars.getMatrix(time_sec) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
+
+	int PVM_loc = glGetUniformLocation(mars_shader_program, "PVM");
+	if (PVM_loc != -1)
+	{
+		glm::mat4 PVM = P * V * M;
+		glUniformMatrix4fv(PVM_loc, 1, false, glm::value_ptr(PVM));
+	}
+
+	int tex_loc = glGetUniformLocation(mars_shader_program, "diffuse_tex");
+	if (tex_loc != -1)
+	{
+		glUniform1i(tex_loc, 1); // we bound our texture to texture unit 0
+	}
+
+	int M_loc = glGetUniformLocation(mars_shader_program, "M");
+	if (M_loc != -1)
+	{
+		glUniformMatrix4fv(M_loc, 1, false, glm::value_ptr(M));
+	}
+
+	int V_loc = glGetUniformLocation(mars_shader_program, "V");
+	if (V_loc != -1)
+	{
+		glUniformMatrix4fv(V_loc, 1, false, glm::value_ptr(V));
+	}
+
+	glBindVertexArray(sphere_mesh_data.mVao);
+	// glDrawElements(GL_TRIANGLES, mesh_data.mSubmesh[0].mNumIndices, GL_UNSIGNED_INT, 0);
+	// For meshes with multiple submeshes use mesh_data.DrawMesh();
+	sphere_mesh_data.DrawMesh();
+
+}
+
+void draw_jupiter(const glm::mat4& V, const glm::mat4& P)
+{
+	glUseProgram(jupiter_shader_program);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, jupiter_texture_id);
+
+	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
+	float time_sec = 0.001f*time_ms;
+	glm::mat4 M = jupiter.getMatrix(time_sec) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
+
+	int PVM_loc = glGetUniformLocation(jupiter_shader_program, "PVM");
+	if (PVM_loc != -1)
+	{
+		glm::mat4 PVM = P * V * M;
+		glUniformMatrix4fv(PVM_loc, 1, false, glm::value_ptr(PVM));
+	}
+
+	int tex_loc = glGetUniformLocation(jupiter_shader_program, "diffuse_tex");
+	if (tex_loc != -1)
+	{
+		glUniform1i(tex_loc, 1); // we bound our texture to texture unit 0
+	}
+
+	int M_loc = glGetUniformLocation(jupiter_shader_program, "M");
+	if (M_loc != -1)
+	{
+		glUniformMatrix4fv(M_loc, 1, false, glm::value_ptr(M));
+	}
+
+	int V_loc = glGetUniformLocation(jupiter_shader_program, "V");
+	if (V_loc != -1)
+	{
+		glUniformMatrix4fv(V_loc, 1, false, glm::value_ptr(V));
+	}
+
+	glBindVertexArray(sphere_mesh_data.mVao);
+	// glDrawElements(GL_TRIANGLES, mesh_data.mSubmesh[0].mNumIndices, GL_UNSIGNED_INT, 0);
+	// For meshes with multiple submeshes use mesh_data.DrawMesh();
+	sphere_mesh_data.DrawMesh();
+
+}
+
 // glut display callback function.
 // This function gets called every time the scene gets redisplayed 
 void display()
@@ -359,6 +456,8 @@ void display()
 	draw_mercury(V, P);
 	draw_venus(V, P);
 	draw_earth(V, P);
+	draw_mars(V, P);
+	draw_jupiter(V, P);
 	
 	draw_cube(V, P);
 
@@ -442,6 +541,14 @@ void initOpenGl()
 	// create Earth
 	earth_shader_program = InitShader(earth_vs.c_str(), earth_fs.c_str());
 	earth_texture_id = LoadTexture(earth_texture_name);
+
+	// create Mars
+	mars_shader_program = InitShader(mars_vs.c_str(), mars_fs.c_str());
+	mars_texture_id = LoadTexture(mars_texture_name);
+
+	// create Jupiter
+	jupiter_shader_program = InitShader(jupiter_vs.c_str(), jupiter_fs.c_str());
+	jupiter_texture_id = LoadTexture(jupiter_texture_name);
 
 	// skybox
 	cubemap_id = LoadCube(cube_name);
