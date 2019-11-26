@@ -24,7 +24,7 @@ glm::mat4 Planet::getMatrix(float time_sec)
 
 	glm::mat4 Trans = glm::translate(glm::vec3(planetPos, 0, 0));
 
-	glm::mat4 Revolute = glm::rotate(time_sec / revolutionSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 Revolute = glm::rotate(time_sec / revolutionSpeed * 10, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	M = Revolute * Trans * Scale * Rotation;
 

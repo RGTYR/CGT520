@@ -61,7 +61,7 @@ GLuint sun_texture_id = -1;
 static const std::string sun_texture_name = "sunmap.bmp";
 
 // Mercury files and IDs
-Planet mercury(0.61, 67, 0.58, 0.87);
+Planet mercury(0.61, 67.0, 0.58, 0.87);
 static const std::string mercury_vs("planet_vs.glsl");
 static const std::string mercury_fs("planet_fs.glsl");
 GLuint mercury_shader_program = -1;
@@ -69,7 +69,7 @@ GLuint mercury_texture_id = -1;
 static const std::string mercury_texture_name = "mercurymap.bmp";
 
 // venus files and IDs
-Planet venus(0.97, 91, 2.43, 2.24);
+Planet venus(0.97, 91.0, 2.43, 2.24);
 static const std::string venus_vs("planet_vs.glsl");
 static const std::string venus_fs("planet_fs.glsl");
 GLuint venus_shader_program = -1;
@@ -77,7 +77,7 @@ GLuint venus_texture_id = -1;
 static const std::string venus_texture_name = "venusmap.bmp";
 
 // earth files and IDs
-Planet earth(1, 109, 0.01, 3.65);
+Planet earth(1, 109.0, 0.01, 3.65);
 static const std::string earth_vs("planet_vs.glsl");
 static const std::string earth_fs("planet_fs.glsl");
 GLuint earth_shader_program = -1;
@@ -85,7 +85,7 @@ GLuint earth_texture_id = -1;
 static const std::string earth_texture_name = "earthmap.bmp";
 
 // mars files and IDs
-Planet mars(0.73, 133, 0.01, 6.86);
+Planet mars(0.73, 133.0, 0.01, 6.86);
 static const std::string mars_vs("planet_vs.glsl");
 static const std::string mars_fs("planet_fs.glsl");
 GLuint mars_shader_program = -1;
@@ -93,12 +93,49 @@ GLuint mars_texture_id = -1;
 static const std::string mars_texture_name = "marsmap.bmp";
 
 // jupiter files and IDs
-Planet jupiter(3.3, 246, 0.004, 40.0);
+Planet jupiter(3.3, 246.0, 0.003, 40.0);
 static const std::string jupiter_vs("planet_vs.glsl");
 static const std::string jupiter_fs("planet_fs.glsl");
 GLuint jupiter_shader_program = -1;
 GLuint jupiter_texture_id = -1;
 static const std::string jupiter_texture_name = "jupitermap.bmp";
+
+// saturn files and IDs
+Planet saturn(3.0, 334.0, 0.004, 10.0);
+static const std::string saturn_vs("planet_vs.glsl");
+static const std::string saturn_fs("planet_fs.glsl");
+GLuint saturn_shader_program = -1;
+GLuint saturn_texture_id = -1;
+static const std::string saturn_texture_name = "saturnmap.bmp";
+
+// uranus files and IDs
+Planet uranus(2.0, 474.0, 0.006, 306.0);
+static const std::string uranus_vs("planet_vs.glsl");
+static const std::string uranus_fs("planet_fs.glsl");
+GLuint uranus_shader_program = -1;
+GLuint uranus_texture_id = -1;
+static const std::string uranus_texture_name = "uranusmap.bmp";
+
+// neptune files and IDs
+Planet neptune(2.0, 594.0, 0.006, 606.0);
+static const std::string neptune_vs("planet_vs.glsl");
+static const std::string neptune_fs("planet_fs.glsl");
+GLuint neptune_shader_program = -1;
+GLuint neptune_texture_id = -1;
+static const std::string neptune_texture_name = "neptunemap.bmp";
+
+// asteroid files and IDs
+static const std::string asteroid_vs("planet_vs.glsl");
+static const std::string asteroid_fs("planet_fs.glsl");
+GLuint asteroid_shader_program = -1;
+MeshData deimos_mesh_data;
+static const std::string deimos_mesh_name = "deimos.obj";
+static const std::string deimos_texture_name = "deimosbump.bmp";
+GLuint deimos_texture_id = -1;
+MeshData phobos_mesh_data;
+static const std::string phobos_mesh_name = "phobos.obj";
+static const std::string phobos_texture_name = "phobosbump.bmp";
+GLuint phobos_texture_id = -1;
 
 float angle = 0.0f;
 float scale = 1.0f;
@@ -442,6 +479,176 @@ void draw_jupiter(const glm::mat4& V, const glm::mat4& P)
 
 }
 
+void draw_saturn(const glm::mat4& V, const glm::mat4& P)
+{
+	glUseProgram(saturn_shader_program);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, saturn_texture_id);
+
+	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
+	float time_sec = 0.001f*time_ms;
+	glm::mat4 M = saturn.getMatrix(time_sec) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
+
+	int PVM_loc = glGetUniformLocation(saturn_shader_program, "PVM");
+	if (PVM_loc != -1)
+	{
+		glm::mat4 PVM = P * V * M;
+		glUniformMatrix4fv(PVM_loc, 1, false, glm::value_ptr(PVM));
+	}
+
+	int tex_loc = glGetUniformLocation(saturn_shader_program, "diffuse_tex");
+	if (tex_loc != -1)
+	{
+		glUniform1i(tex_loc, 1); // we bound our texture to texture unit 0
+	}
+
+	int M_loc = glGetUniformLocation(saturn_shader_program, "M");
+	if (M_loc != -1)
+	{
+		glUniformMatrix4fv(M_loc, 1, false, glm::value_ptr(M));
+	}
+
+	int V_loc = glGetUniformLocation(saturn_shader_program, "V");
+	if (V_loc != -1)
+	{
+		glUniformMatrix4fv(V_loc, 1, false, glm::value_ptr(V));
+	}
+
+	glBindVertexArray(sphere_mesh_data.mVao);
+	// glDrawElements(GL_TRIANGLES, mesh_data.mSubmesh[0].mNumIndices, GL_UNSIGNED_INT, 0);
+	// For meshes with multiple submeshes use mesh_data.DrawMesh();
+	sphere_mesh_data.DrawMesh();
+
+}
+
+void draw_uranus(const glm::mat4& V, const glm::mat4& P)
+{
+	glUseProgram(uranus_shader_program);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, uranus_texture_id);
+
+	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
+	float time_sec = 0.001f*time_ms;
+	glm::mat4 M = uranus.getMatrix(time_sec) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
+
+	int PVM_loc = glGetUniformLocation(uranus_shader_program, "PVM");
+	if (PVM_loc != -1)
+	{
+		glm::mat4 PVM = P * V * M;
+		glUniformMatrix4fv(PVM_loc, 1, false, glm::value_ptr(PVM));
+	}
+
+	int tex_loc = glGetUniformLocation(uranus_shader_program, "diffuse_tex");
+	if (tex_loc != -1)
+	{
+		glUniform1i(tex_loc, 1); // we bound our texture to texture unit 0
+	}
+
+	int M_loc = glGetUniformLocation(uranus_shader_program, "M");
+	if (M_loc != -1)
+	{
+		glUniformMatrix4fv(M_loc, 1, false, glm::value_ptr(M));
+	}
+
+	int V_loc = glGetUniformLocation(uranus_shader_program, "V");
+	if (V_loc != -1)
+	{
+		glUniformMatrix4fv(V_loc, 1, false, glm::value_ptr(V));
+	}
+
+	glBindVertexArray(sphere_mesh_data.mVao);
+	// glDrawElements(GL_TRIANGLES, mesh_data.mSubmesh[0].mNumIndices, GL_UNSIGNED_INT, 0);
+	// For meshes with multiple submeshes use mesh_data.DrawMesh();
+	sphere_mesh_data.DrawMesh();
+
+}
+
+void draw_neptune(const glm::mat4& V, const glm::mat4& P)
+{
+	glUseProgram(neptune_shader_program);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, neptune_texture_id);
+
+	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
+	float time_sec = 0.001f*time_ms;
+	glm::mat4 M = neptune.getMatrix(time_sec) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
+
+	int PVM_loc = glGetUniformLocation(neptune_shader_program, "PVM");
+	if (PVM_loc != -1)
+	{
+		glm::mat4 PVM = P * V * M;
+		glUniformMatrix4fv(PVM_loc, 1, false, glm::value_ptr(PVM));
+	}
+
+	int tex_loc = glGetUniformLocation(neptune_shader_program, "diffuse_tex");
+	if (tex_loc != -1)
+	{
+		glUniform1i(tex_loc, 1); // we bound our texture to texture unit 0
+	}
+
+	int M_loc = glGetUniformLocation(neptune_shader_program, "M");
+	if (M_loc != -1)
+	{
+		glUniformMatrix4fv(M_loc, 1, false, glm::value_ptr(M));
+	}
+
+	int V_loc = glGetUniformLocation(neptune_shader_program, "V");
+	if (V_loc != -1)
+	{
+		glUniformMatrix4fv(V_loc, 1, false, glm::value_ptr(V));
+	}
+
+	glBindVertexArray(sphere_mesh_data.mVao);
+	// glDrawElements(GL_TRIANGLES, mesh_data.mSubmesh[0].mNumIndices, GL_UNSIGNED_INT, 0);
+	// For meshes with multiple submeshes use mesh_data.DrawMesh();
+	sphere_mesh_data.DrawMesh();
+
+}
+
+void draw_deimos(const glm::mat4& V, const glm::mat4& P)
+{
+	glUseProgram(asteroid_shader_program);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, deimos_texture_id);
+
+	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
+	float time_sec = 0.001f*time_ms;
+	glm::mat4 M = glm::scale(glm::vec3(scale * deimos_mesh_data.mScaleFactor));
+
+	int PVM_loc = glGetUniformLocation(neptune_shader_program, "PVM");
+	if (PVM_loc != -1)
+	{
+		glm::mat4 PVM = P * V * M;
+		glUniformMatrix4fv(PVM_loc, 1, false, glm::value_ptr(PVM));
+	}
+
+	int tex_loc = glGetUniformLocation(neptune_shader_program, "diffuse_tex");
+	if (tex_loc != -1)
+	{
+		glUniform1i(tex_loc, 1); // we bound our texture to texture unit 0
+	}
+
+	int M_loc = glGetUniformLocation(neptune_shader_program, "M");
+	if (M_loc != -1)
+	{
+		glUniformMatrix4fv(M_loc, 1, false, glm::value_ptr(M));
+	}
+
+	int V_loc = glGetUniformLocation(neptune_shader_program, "V");
+	if (V_loc != -1)
+	{
+		glUniformMatrix4fv(V_loc, 1, false, glm::value_ptr(V));
+	}
+
+	glBindVertexArray(deimos_mesh_data.mVao);
+	// glDrawElements(GL_TRIANGLES, mesh_data.mSubmesh[0].mNumIndices, GL_UNSIGNED_INT, 0);
+	// For meshes with multiple submeshes use mesh_data.DrawMesh();
+	deimos_mesh_data.DrawMesh();
+
+}
+
+
+
 // glut display callback function.
 // This function gets called every time the scene gets redisplayed 
 void display()
@@ -458,6 +665,9 @@ void display()
 	draw_earth(V, P);
 	draw_mars(V, P);
 	draw_jupiter(V, P);
+	draw_saturn(V, P);
+	draw_uranus(V, P);
+	draw_neptune(V, P);
 	
 	draw_cube(V, P);
 
@@ -549,6 +759,24 @@ void initOpenGl()
 	// create Jupiter
 	jupiter_shader_program = InitShader(jupiter_vs.c_str(), jupiter_fs.c_str());
 	jupiter_texture_id = LoadTexture(jupiter_texture_name);
+
+	// create Saturn
+	saturn_shader_program = InitShader(saturn_vs.c_str(), saturn_fs.c_str());
+	saturn_texture_id = LoadTexture(saturn_texture_name);
+
+	// create Uranus
+	uranus_shader_program = InitShader(uranus_vs.c_str(), uranus_fs.c_str());
+	uranus_texture_id = LoadTexture(uranus_texture_name);
+
+	// create Neptune
+	neptune_shader_program = InitShader(neptune_vs.c_str(), neptune_fs.c_str());
+	neptune_texture_id = LoadTexture(neptune_texture_name);
+
+	// create Asteroid
+	deimos_mesh_data = LoadMesh(deimos_mesh_name);
+	deimos_texture_id = LoadTexture(deimos_texture_name);
+	phobos_mesh_data = LoadMesh(phobos_mesh_name);
+	phobos_texture_id = LoadTexture(phobos_texture_name);
 
 	// skybox
 	cubemap_id = LoadCube(cube_name);
