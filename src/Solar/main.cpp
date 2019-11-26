@@ -53,41 +53,37 @@ GLuint cubemap_id = -1;
 
 
 // Sun files and IDs
-Planet sun(5, 0, 0.25, 100);
+Planet sun(109, 0, 0.25, 100);
 static const std::string sun_vs("sun_vs.glsl");
 static const std::string sun_fs("sun_fs.glsl");
 GLuint sun_shader_program = -1;
-GLuint sun_vao = -1;
 GLuint sun_texture_id = -1;
 static const std::string sun_texture_name = "sunmap.bmp";
 
 // Mercury files and IDs
 // size: 0.15
-Planet mercury(1, 10, 0.58, 0.87);
+Planet mercury(0.38, 460, 0.58, 0.87);
 static const std::string mercury_vs("planet_vs.glsl");
 static const std::string mercury_fs("planet_fs.glsl");
 GLuint mercury_shader_program = -1;
-GLuint mercury_vao = -1;
 GLuint mercury_texture_id = -1;
 static const std::string mercury_texture_name = "mercurymap.bmp";
 
 // venus files and IDs
 // size: 0.45
-Planet venus(1, 20, 2.43, 2.24);
+Planet venus(0.95, 840, 2.43, 2.24);
 static const std::string venus_vs("planet_vs.glsl");
 static const std::string venus_fs("planet_fs.glsl");
 GLuint venus_shader_program = -1;
-GLuint venus_vao = -1;
 GLuint venus_texture_id = -1;
 static const std::string venus_texture_name = "venusmap.bmp";
 
 // earth files and IDs
 // size: 0.45
-Planet earth(3, 30, 0.01, 3.65);
+Planet earth(1, 1180, 0.01, 3.65);
 static const std::string earth_vs("planet_vs.glsl");
 static const std::string earth_fs("planet_fs.glsl");
 GLuint earth_shader_program = -1;
-GLuint earth_vao = -1;
 GLuint earth_texture_id = -1;
 static const std::string earth_texture_name = "earthmap.bmp";
 
@@ -120,7 +116,7 @@ void draw_cube(const glm::mat4& V, const glm::mat4& P)
 	int PVM_loc = glGetUniformLocation(cube_shader_program, "PVM");
 	if (PVM_loc != -1)
 	{
-		glm::mat4 Msky = glm::scale(glm::vec3(1000.0f));
+		glm::mat4 Msky = glm::scale(glm::vec3(10000.0f));
 		glm::mat4 PVM = P * V * Msky;
 		PVM[3] = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		glUniformMatrix4fv(PVM_loc, 1, false, glm::value_ptr(PVM));
@@ -356,7 +352,7 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear the back buffer
 
 	glm::mat4 V = glm::lookAt(camera.cameraPos, camera.cameraPos + camera.cameraTarget, camera.worldUp);
-	glm::mat4 P = glm::perspective(40.0f, 1.0f, 0.1f, 1000.0f);
+	glm::mat4 P = glm::perspective(40.0f, 1.0f, 0.1f, 10000.0f);
 
 	// draw_fish(V, P);
 	draw_sun(V, P);
@@ -433,12 +429,10 @@ void initOpenGl()
 
 	// create Sun
 	sun_shader_program = InitShader(sun_vs.c_str(), sun_fs.c_str());
-	sun_vao = sun.getVAO();
 	sun_texture_id = LoadTexture(sun_texture_name);
 
 	// create Mercury
 	mercury_shader_program = InitShader(mercury_vs.c_str(), mercury_fs.c_str());
-	mercury_vao = mercury.getVAO();
 	mercury_texture_id = LoadTexture(mercury_texture_name);
 
 	// create Venus
