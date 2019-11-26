@@ -613,6 +613,9 @@ void draw_deimos(const glm::mat4& V, const glm::mat4& P)
 
 	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
 	float time_sec = 0.001f*time_ms;
+	glm::mat4 Scale = glm::scale(glm::vec3(0.01f));
+	// To do
+	glm::mat4 Trans = glm::translate(glm::vec3(0 , 0, 0));
 	glm::mat4 M = glm::scale(glm::vec3(scale * deimos_mesh_data.mScaleFactor));
 
 	int PVM_loc = glGetUniformLocation(neptune_shader_program, "PVM");
