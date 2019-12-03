@@ -910,6 +910,10 @@ void keyboard(unsigned char key, int x, int y)
 		myTime.timeSpeed = 1.0f;
 		SoundEngine->play2D("audio/Go.wav", GL_FALSE);
 		break;
+	case 'v':
+	case 'V':
+		SoundEngine->stopAllSounds();
+		break;
 	case '+':
 		myTime.timeSpeed += 1.0f;
 		SoundEngine->play2D("audio/SpeedUp.wav", GL_FALSE);
