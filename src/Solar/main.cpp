@@ -31,8 +31,12 @@
 // Functions for skybox
 #include "Cube.h"
 
+// Function for particles
+#include "particle.h"
+
 // global variables
 #include "global_variables.h"
+
 
 //Draw the ImGui user interface
 void draw_gui()
@@ -131,12 +135,10 @@ void draw_sun(const glm::mat4& V, const glm::mat4& P)
 	int PVM_loc = glGetUniformLocation(sun_shader_program, "PVM");
 	if (PVM_loc != -1)
 	{
-		const int time_ms = glutGet(GLUT_ELAPSED_TIME);
-		float time_sec = 0.001f*time_ms;
 
 		// glm::mat4 R = glm::rotate(sin(time_sec), glm::vec3(1.0f, 1.0f, 0.0f));
 		// glm::mat4 M = R * glm::scale(glm::vec3(1.0f));
-		glm::mat4 M = sun.getMatrix(time_sec) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
+		glm::mat4 M = sun.getMatrix(myTime.accountingTime) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
 		glm::mat4 PVM = P * V * M;
 		glUniformMatrix4fv(PVM_loc, 1, false, glm::value_ptr(PVM));
 	}
@@ -162,9 +164,7 @@ void draw_mercury(const glm::mat4& V, const glm::mat4& P)
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, mercury_texture_id);
 
-	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
-	float time_sec = 0.001f*time_ms;
-	glm::mat4 M = mercury.getMatrix(time_sec) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
+	glm::mat4 M = mercury.getMatrix(myTime.accountingTime) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
 
 	int PVM_loc = glGetUniformLocation(mercury_shader_program, "PVM");
 	if (PVM_loc != -1)
@@ -206,9 +206,7 @@ void draw_venus(const glm::mat4& V, const glm::mat4& P)
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, venus_texture_id);
 
-	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
-	float time_sec = 0.001f*time_ms;
-	glm::mat4 M = venus.getMatrix(time_sec) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
+	glm::mat4 M = venus.getMatrix(myTime.accountingTime) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
 
 	int PVM_loc = glGetUniformLocation(venus_shader_program, "PVM");
 	if (PVM_loc != -1)
@@ -250,9 +248,7 @@ void draw_earth(const glm::mat4& V, const glm::mat4& P)
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, earth_texture_id);
 
-	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
-	float time_sec = 0.001f*time_ms;
-	glm::mat4 M = earth.getMatrix(time_sec) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
+	glm::mat4 M = earth.getMatrix(myTime.accountingTime) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
 
 	int PVM_loc = glGetUniformLocation(earth_shader_program, "PVM");
 	if (PVM_loc != -1)
@@ -288,15 +284,58 @@ void draw_earth(const glm::mat4& V, const glm::mat4& P)
 	sun.drawSphere(earth_vao);*/
 }
 
+void draw_moon(const glm::mat4& V, const glm::mat4& P)
+{
+	glUseProgram(moon_shader_program);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, moon_texture_id);
+
+	glm::mat4 Trans = glm::translate(glm::vec3(1.5f * cos(myTime.accountingTime), 0.0f, 1.5f * sin(myTime.accountingTime)));
+	glm::mat4 M = Trans * earth.getMatrix(myTime.accountingTime)
+		* glm::scale(glm::vec3(0.3f * scale * sphere_mesh_data.mScaleFactor));
+
+	int PVM_loc = glGetUniformLocation(moon_shader_program, "PVM");
+	if (PVM_loc != -1)
+	{
+		glm::mat4 PVM = P * V * M;
+		glUniformMatrix4fv(PVM_loc, 1, false, glm::value_ptr(PVM));
+	}
+
+	int tex_loc = glGetUniformLocation(moon_shader_program, "diffuse_tex");
+	if (tex_loc != -1)
+	{
+		glUniform1i(tex_loc, 1); // we bound our texture to texture unit 0
+	}
+
+	int M_loc = glGetUniformLocation(moon_shader_program, "M");
+	if (M_loc != -1)
+	{
+		glUniformMatrix4fv(M_loc, 1, false, glm::value_ptr(M));
+	}
+
+	int V_loc = glGetUniformLocation(moon_shader_program, "V");
+	if (V_loc != -1)
+	{
+		glUniformMatrix4fv(V_loc, 1, false, glm::value_ptr(V));
+	}
+
+	glBindVertexArray(sphere_mesh_data.mVao);
+	// glDrawElements(GL_TRIANGLES, mesh_data.mSubmesh[0].mNumIndices, GL_UNSIGNED_INT, 0);
+	// For meshes with multiple submeshes use mesh_data.DrawMesh();
+	sphere_mesh_data.DrawMesh();
+
+	/*glBindVertexArray(earth_vao);
+	sun.drawSphere(earth_vao);*/
+}
+
+
 void draw_mars(const glm::mat4& V, const glm::mat4& P)
 {
 	glUseProgram(mars_shader_program);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, mars_texture_id);
 
-	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
-	float time_sec = 0.001f*time_ms;
-	glm::mat4 M = mars.getMatrix(time_sec) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
+	glm::mat4 M = mars.getMatrix(myTime.accountingTime) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
 
 	int PVM_loc = glGetUniformLocation(mars_shader_program, "PVM");
 	if (PVM_loc != -1)
@@ -336,9 +375,7 @@ void draw_jupiter(const glm::mat4& V, const glm::mat4& P)
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, jupiter_texture_id);
 
-	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
-	float time_sec = 0.001f*time_ms;
-	glm::mat4 M = jupiter.getMatrix(time_sec) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
+	glm::mat4 M = jupiter.getMatrix(myTime.accountingTime) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
 
 	int PVM_loc = glGetUniformLocation(jupiter_shader_program, "PVM");
 	if (PVM_loc != -1)
@@ -378,9 +415,7 @@ void draw_saturn(const glm::mat4& V, const glm::mat4& P)
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, saturn_texture_id);
 
-	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
-	float time_sec = 0.001f*time_ms;
-	glm::mat4 M = saturn.getMatrix(time_sec) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
+	glm::mat4 M = saturn.getMatrix(myTime.accountingTime) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
 
 	int PVM_loc = glGetUniformLocation(saturn_shader_program, "PVM");
 	if (PVM_loc != -1)
@@ -407,10 +442,10 @@ void draw_saturn(const glm::mat4& V, const glm::mat4& P)
 		glUniformMatrix4fv(V_loc, 1, false, glm::value_ptr(V));
 	}
 
-	glBindVertexArray(sphere_mesh_data.mVao);
+	glBindVertexArray(saturn_mesh_data.mVao);
 	// glDrawElements(GL_TRIANGLES, mesh_data.mSubmesh[0].mNumIndices, GL_UNSIGNED_INT, 0);
 	// For meshes with multiple submeshes use mesh_data.DrawMesh();
-	sphere_mesh_data.DrawMesh();
+	saturn_mesh_data.DrawMesh();
 
 }
 
@@ -420,9 +455,7 @@ void draw_uranus(const glm::mat4& V, const glm::mat4& P)
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, uranus_texture_id);
 
-	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
-	float time_sec = 0.001f*time_ms;
-	glm::mat4 M = uranus.getMatrix(time_sec) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
+	glm::mat4 M = uranus.getMatrix(myTime.accountingTime) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
 
 	int PVM_loc = glGetUniformLocation(uranus_shader_program, "PVM");
 	if (PVM_loc != -1)
@@ -462,9 +495,7 @@ void draw_neptune(const glm::mat4& V, const glm::mat4& P)
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, neptune_texture_id);
 
-	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
-	float time_sec = 0.001f*time_ms;
-	glm::mat4 M = neptune.getMatrix(time_sec) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
+	glm::mat4 M = neptune.getMatrix(myTime.accountingTime) * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
 
 	int PVM_loc = glGetUniformLocation(neptune_shader_program, "PVM");
 	if (PVM_loc != -1)
@@ -504,13 +535,11 @@ void draw_deimos(const glm::mat4& V, const glm::mat4& P, int index)
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, deimos_texture_id);
 
-	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
-	float time_sec = 0.001f*time_ms;
-	glm::mat4 Scale = glm::scale(glm::vec3(0.1f));
+	glm::mat4 Scale = glm::scale(glm::vec3(0.2f));
 	glm::mat4 Rotate = glm::rotate(deimos_rotation[index], glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 Trans = glm::translate(glm::vec3(deimos_revolution_radius[index] * sin(deimos_revolution_theta[index]),
 		0, deimos_revolution_radius[index] * cos(deimos_revolution_theta[index])));
-	glm::mat4 Revolute = glm::rotate(time_sec, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 Revolute = glm::rotate(myTime.accountingTime, glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 M = Revolute * Trans * Rotate * Scale * glm::scale(glm::vec3(scale * deimos_mesh_data.mScaleFactor));
 
 	int PVM_loc = glGetUniformLocation(asteroid_shader_program, "PVM");
@@ -551,13 +580,11 @@ void draw_phobos(const glm::mat4& V, const glm::mat4& P, int index)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, phobos_texture_id);
 
-	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
-	float time_sec = 0.001f*time_ms;
-	glm::mat4 Scale = glm::scale(glm::vec3(0.1f));
+	glm::mat4 Scale = glm::scale(glm::vec3(0.2f));
 	glm::mat4 Rotate = glm::rotate(phobos_rotation[index], glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 Trans = glm::translate(glm::vec3(phobos_revolution_radius[index] * sin(phobos_revolution_theta[index]),
 		0, phobos_revolution_radius[index] * cos(phobos_revolution_theta[index])));
-	glm::mat4 Revolute = glm::rotate(time_sec, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 Revolute = glm::rotate(myTime.accountingTime, glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 M = Revolute * Trans * Rotate * Scale * glm::scale(glm::vec3(scale * phobos_mesh_data.mScaleFactor));
 
 	int PVM_loc = glGetUniformLocation(asteroid_shader_program, "PVM");
@@ -592,6 +619,70 @@ void draw_phobos(const glm::mat4& V, const glm::mat4& P, int index)
 
 }
 
+void draw_particle(const glm::mat4& M, const glm::mat4& V, const glm::mat4& P)
+{
+	glUseProgram(particles_shader_program);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, sun_texture_id);
+
+	int PVM_loc = glGetUniformLocation(particles_shader_program, "PVM");
+	if (PVM_loc != -1)
+	{
+		glm::mat4 PVM = P * V * M;
+		glUniformMatrix4fv(PVM_loc, 1, false, glm::value_ptr(PVM));
+	}
+
+	int tex_loc = glGetUniformLocation(particles_shader_program, "diffuse_tex");
+	if (tex_loc != -1)
+	{
+		glUniform1i(tex_loc, 1); // we bound our texture to texture unit 0
+	}
+
+	int M_loc = glGetUniformLocation(particles_shader_program, "M");
+	if (M_loc != -1)
+	{
+		glUniformMatrix4fv(M_loc, 1, false, glm::value_ptr(M));
+	}
+
+	int V_loc = glGetUniformLocation(particles_shader_program, "V");
+	if (V_loc != -1)
+	{
+		glUniformMatrix4fv(V_loc, 1, false, glm::value_ptr(V));
+	}
+
+	glBindVertexArray(sphere_mesh_data.mVao);
+	// glDrawElements(GL_TRIANGLES, mesh_data.mSubmesh[0].mNumIndices, GL_UNSIGNED_INT, 0);
+	// For meshes with multiple submeshes use mesh_data.DrawMesh();
+	sphere_mesh_data.DrawMesh();
+}
+
+void draw_particles(const glm::mat4& V, const glm::mat4& P)
+{
+
+	for (int i = 0; i < p_sys.particles.size(); i++)
+	{
+		glm::mat4 Scale = glm::scale(glm::vec3(1.0f) * p_sys.particles[i].Life);
+		glm::mat4 Trans = glm::translate(p_sys.particles[i].Velocity * (myTime.accountingTime - p_sys.particles[i].Time));
+		glm::mat4 Revolute = glm::rotate((myTime.accountingTime - p_sys.particles[i].Time), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 M = Revolute * Trans * Scale * glm::scale(glm::vec3(scale * sphere_mesh_data.mScaleFactor));
+
+		draw_particle(M, V, P);
+
+		std::uniform_real_distribution<double> u(0.95, 1.0);
+		p_sys.particles[i].Life = p_sys.particles[i].Life * u(random_engine);
+	}
+
+	for (int i = 0; i < p_sys.particles.size(); i++)
+	{
+		if (p_sys.particles[i].Life < 0.1)
+		{
+			p_sys.particles[i] = p_sys.new_particle(myTime.accountingTime);
+		}
+	}
+
+	p_sys.add_particles(20, myTime.accountingTime);
+}
+
 // glut display callback function.
 // This function gets called every time the scene gets redisplayed 
 void display()
@@ -601,11 +692,19 @@ void display()
 	glm::mat4 V = glm::lookAt(camera.cameraPos, camera.cameraPos + camera.cameraTarget, camera.worldUp);
 	glm::mat4 P = glm::perspective(40.0f, 1.0f, 0.1f, 10000.0f);
 
+	const int time_ms = glutGet(GLUT_ELAPSED_TIME);
+	float time_sec = 0.001f*time_ms;
+
+	myTime.currentTime = time_sec;
+	myTime.accountingTime += (myTime.currentTime - myTime.lastTime) * myTime.timeSpeed;
+	myTime.lastTime = myTime.currentTime;
+
 	// draw_fish(V, P);
 	draw_sun(V, P);
 	draw_mercury(V, P);
 	draw_venus(V, P);
 	draw_earth(V, P);
+	draw_moon(V, P);
 	draw_mars(V, P);
 	draw_jupiter(V, P);
 	draw_saturn(V, P);
@@ -618,7 +717,9 @@ void display()
 	
 	draw_cube(V, P);
 
-	draw_gui();
+	draw_particles(V, P);
+
+	// draw_gui();
 
 	glutSwapBuffers();
 }
@@ -698,6 +799,9 @@ void initOpenGl()
 	// create Earth
 	earth_shader_program = InitShader(earth_vs.c_str(), earth_fs.c_str());
 	earth_texture_id = LoadTexture(earth_texture_name);
+	// create Moon
+	moon_shader_program = InitShader(moon_vs.c_str(), moon_fs.c_str());
+	moon_texture_id = LoadTexture(moon_texture_name);
 
 	// create Mars
 	mars_shader_program = InitShader(mars_vs.c_str(), mars_fs.c_str());
@@ -710,6 +814,7 @@ void initOpenGl()
 	// create Saturn
 	saturn_shader_program = InitShader(saturn_vs.c_str(), saturn_fs.c_str());
 	saturn_texture_id = LoadTexture(saturn_texture_name);
+	saturn_mesh_data = LoadMesh(saturn_mesh_name);
 
 	// create Uranus
 	uranus_shader_program = InitShader(uranus_vs.c_str(), uranus_fs.c_str());
@@ -740,6 +845,15 @@ void initOpenGl()
 	cube_shader_program = InitShader(cube_vs.c_str(), cube_fs.c_str());
 	cube_vao = create_cube_vao();
 
+	// particle system
+	particles_shader_program = InitShader(particles_vs.c_str(), particles_fs.c_str());
+
+	// Initial Time
+	myTime.accountingTime = 0.0;
+	myTime.lastTime = 0.0;
+	myTime.timeSpeed = 1.0;
+	myTime.currentTime = 0.0;
+
 	// initialize the imgui system
 	ImGui_ImplGlut_Init();
 }
@@ -751,6 +865,62 @@ void keyboard(unsigned char key, int x, int y)
 
 	switch (key)
 	{
+	case '1':
+		SoundEngine->stopAllSounds();
+		SoundEngine->play2D("audio/nier1.flac", GL_TRUE);
+		break;
+	case '2':
+		SoundEngine->stopAllSounds();
+		SoundEngine->play2D("audio/nier2.flac", GL_TRUE);
+		break;
+	case '3':
+		SoundEngine->stopAllSounds();
+		SoundEngine->play2D("audio/nier3.flac", GL_TRUE);
+		break;
+	case '4':
+		SoundEngine->stopAllSounds();
+		SoundEngine->play2D("audio/nier4.flac", GL_TRUE);
+		break;
+	case '5':
+		SoundEngine->stopAllSounds();
+		SoundEngine->play2D("audio/nier5.flac", GL_TRUE);
+		break;
+	case '6':
+		camera = viewport1;
+		break;
+	case '7':
+		camera = viewport2;
+		break;
+	case '8':
+		camera = viewport3;
+		break;
+	case '9':
+		camera = viewport4;
+		break;
+	case '0':
+		camera = viewport0;
+		break;
+	case 'p':
+	case 'P':
+		myTime.timeSpeed = 0.0f;
+		SoundEngine->play2D("audio/Pause.wav", GL_FALSE);
+		break;
+	case 'g':
+	case 'G':
+		myTime.timeSpeed = 1.0f;
+		SoundEngine->play2D("audio/Go.wav", GL_FALSE);
+		break;
+	case '+':
+		myTime.timeSpeed += 1.0f;
+		SoundEngine->play2D("audio/SpeedUp.wav", GL_FALSE);
+		break;
+	case '-':
+		if (myTime.timeSpeed >= 1.0f)
+		{
+			myTime.timeSpeed = 1.0f;
+			SoundEngine->play2D("audio/SpeedDown.wav", GL_FALSE);
+		}
+		break;
 	case 'r':
 	case 'R':
 		reload_shader();
@@ -820,16 +990,15 @@ void mouse(int button, int state, int x, int y)
 	ImGui_ImplGlut_MouseButtonCallback(button, state);
 }
 
-
 int main(int argc, char **argv)
 {
 	//Configure initial window state
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+	glEnable(GL_BLEND);
 	glutInitWindowPosition(5, 5);
 	glutInitWindowSize(1080, 1080);
-	int win = glutCreateWindow("GUI demo");
-
+	int win = glutCreateWindow("Solar System");
 	printGlInfo();
 
 	// BGM, realised by irrKlang

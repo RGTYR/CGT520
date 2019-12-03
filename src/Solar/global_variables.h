@@ -56,6 +56,11 @@ static const std::string earth_fs("planet_fs.glsl");
 GLuint earth_shader_program = -1;
 GLuint earth_texture_id = -1;
 static const std::string earth_texture_name = "earthmap.bmp";
+static const std::string moon_vs("planet_vs.glsl");
+static const std::string moon_fs("planet_fs.glsl");
+GLuint moon_shader_program = -1;
+GLuint moon_texture_id = -1;
+static const std::string moon_texture_name = "moonmap.bmp";
 
 // mars files and IDs
 Planet mars(0.73, 133.0, 0.01, 6.86);
@@ -74,12 +79,14 @@ GLuint jupiter_texture_id = -1;
 static const std::string jupiter_texture_name = "jupitermap.bmp";
 
 // saturn files and IDs
-Planet saturn(3.0, 334.0, 0.004, 10.0);
+Planet saturn(0.8, 334.0, 0.004, 10.0, glm::vec3(0.0f, 0.0f, 1.0f));
 static const std::string saturn_vs("planet_vs.glsl");
 static const std::string saturn_fs("planet_fs.glsl");
 GLuint saturn_shader_program = -1;
 GLuint saturn_texture_id = -1;
 static const std::string saturn_texture_name = "saturnmap.bmp";
+static const std::string saturn_mesh_name = "Saturn.obj";
+MeshData saturn_mesh_data;
 
 // uranus files and IDs
 Planet uranus(2.0, 474.0, 0.006, 306.0);
@@ -116,11 +123,32 @@ int phobos_revolution_radius[1000];
 int phobos_revolution_theta[1000];
 float phobos_rotation[1000];
 
+// Particle System
+GLuint particles_shader_program = -1;
+static const std::string particles_vs("particles_vs.glsl");
+static const std::string particles_fs("particles_fs.glsl");
+ParticleSystem p_sys(glm::vec3(0.0f), 3000, 10);
+
 float angle = 0.0f;
 float scale = 1.0f;
-Camera camera(glm::vec3(-10.0f, 10.0f, 30.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+Camera camera;
+Camera viewport0;
+Camera viewport1(glm::vec3(100.0f, 100.0f, 100.0f));
+Camera viewport2(glm::vec3(500.0f, 0.0f, 0.0f));
+Camera viewport3(glm::vec3(0.0f, 500.0f, 0.0f));
+Camera viewport4(glm::vec3(0.0f, 0.0f, 500.0f));
 
 irrklang::ISoundEngine *SoundEngine = irrklang::createIrrKlangDevice();
+
+std::default_random_engine random_engine;
+
+struct MyTime
+{
+	float currentTime;
+	float lastTime;
+	float accountingTime;
+	float timeSpeed;
+} myTime;
 
 #endif // !__GLOBAL_VARIABLES_H__
 

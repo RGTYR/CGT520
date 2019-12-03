@@ -19,8 +19,9 @@ public:
 	float planetPos;
 	float rotationSpeed;
 	float revolutionSpeed;
+	glm::vec3 rotate_axis;
 
-	Planet(float radius, float pos, float rotation, float revolution);
+	Planet(float radius, float pos, float rotation, float revolution, glm::vec3 rotate_axis = glm::vec3(0.0f, 1.0f, 0.0f));
 	~Planet();
 
 	glm::mat4 getMatrix(float time_sec);

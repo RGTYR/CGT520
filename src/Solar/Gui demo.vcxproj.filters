@@ -21,6 +21,7 @@
     <ClCompile Include="Planet.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="Sphere.cpp" />
+    <ClCompile Include="particle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\imgui\imconfig.h" />
@@ -50,6 +51,8 @@
     <ClInclude Include="Cube.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="global_variables.h" />
+    <ClInclude Include="particle.h" />
+    <ClInclude Include="myRandom.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gui_demo_fs.glsl">
@@ -70,28 +73,22 @@
     <None Include="cube_vs.glsl">
       <Filter>shaders</Filter>
     </None>
-    <None Include="mercury_fs.glsl">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="mercury_vs.glsl">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="venus_fs.glsl">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="venus_vs.glsl">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="earth_fs.glsl">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="earth_vs.glsl">
-      <Filter>shaders</Filter>
-    </None>
     <None Include="asteroid_fs.glsl">
       <Filter>shaders</Filter>
     </None>
     <None Include="asteroid_vs.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="particles_fs.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="particles_vs.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="planet_fs.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="planet_vs.glsl">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

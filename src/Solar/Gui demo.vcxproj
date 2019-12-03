@@ -94,6 +94,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="LoadMesh.cpp" />
     <ClCompile Include="LoadTexture.cpp" />
+    <ClCompile Include="particle.cpp" />
     <ClCompile Include="Planet.cpp" />
     <ClCompile Include="Sphere.cpp" />
   </ItemGroup>
@@ -111,6 +112,8 @@
     <ClInclude Include="InitShader.h" />
     <ClInclude Include="LoadMesh.h" />
     <ClInclude Include="LoadTexture.h" />
+    <ClInclude Include="myRandom.h" />
+    <ClInclude Include="particle.h" />
     <ClInclude Include="Planet.h" />
     <ClInclude Include="Sphere.h" />
   </ItemGroup>
@@ -119,16 +122,14 @@
     <None Include="asteroid_vs.glsl" />
     <None Include="cube_fs.glsl" />
     <None Include="cube_vs.glsl" />
-    <None Include="earth_fs.glsl" />
-    <None Include="earth_vs.glsl" />
     <None Include="gui_demo_fs.glsl" />
     <None Include="gui_demo_vs.glsl" />
-    <None Include="mercury_fs.glsl" />
-    <None Include="mercury_vs.glsl" />
+    <None Include="particles_fs.glsl" />
+    <None Include="particles_vs.glsl" />
+    <None Include="planet_fs.glsl" />
+    <None Include="planet_vs.glsl" />
     <None Include="sun_fs.glsl" />
     <None Include="sun_vs.glsl" />
-    <None Include="venus_fs.glsl" />
-    <None Include="venus_vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
